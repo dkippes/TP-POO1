@@ -5,45 +5,56 @@ TestCase subclass: #TerminalTest
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/12/2021 01:00:40'!
-test001_cuandoUnaTerminalSeCrea_tieneUnUsuarioLogueado
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/12/2021 19:50:15'!
+test001_cuandoUnaTerminalSeIniciaComoRoot_estaYaTieneUnUsuarioRootLogueado
 
 	"Setup"
-	| terminal unUsuarioLogueado |
-	unUsuarioLogueado _ UserRoot conNombre: 'Diego' yContraseña: '1234' .
-	terminal _ Terminal new .
-	terminal agregarUsuario: unUsuarioLogueado . "La terminal se ocupa de agregarUnUsuario?? O el usuario Root??"
-	
-	"Exercise"
-	terminal iniciarSesion: unUsuarioLogueado .
+	| terminal |
+	terminal _ Terminal iniciarComoUserRoot .
 	
 	Assert isTrue: terminal tieneUnUsuarioLogueado .! !
 
-
-!classDefinition: #UsersTest category: 'Grupo1-TP-Final'!
-TestCase subclass: #UsersTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Grupo1-TP-Final'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/12/2021 19:56:35'!
+test002_cuandoUnaTerminalSeRegistraUnUsuario_esteEsAgregadoALaListaDeUsuarios
 
-!UsersTest methodsFor: 'testing_users' stamp: 'dk 11/12/2021 00:48:20'!
-test001_cuandoUnUsuarioPublicoSeCrea_esteTieneUnNombreYUnaContraseña
+	"Setup"
+	| terminal unUser |
+	unUser _ User initializeConNombre: 'Diego' yContraseña: '1234' .
+	terminal _ Terminal new .
+	
+	"Exercise"
+	terminal registrar: unUser .
+	
+	Assert isTrue: (terminal tieneAlUsuario: unUser) .! !
 
-	| userPublic |
-	userPublic _ UserPublic conNombre: 'Diego' yContraseña: '1234' .
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/12/2021 20:08:25'!
+test003_cuandoUnaTerminalSeIniciaSesionConUnUsuario_esteIniciaSesion
 
-	Assert that: userPublic nombre isEqualTo: 'Diego' .
-	Assert that: userPublic contraseña isEqualTo: '1234' .! !
+	"Setup"
+	| terminal unUser |
+	unUser _ User initializeConNombre: 'Diego' yContraseña: '1234' .
+	terminal _ Terminal new .
+	terminal registrar: unUser .
+	
+	"Exercise"
+	terminal iniciarSesion: unUser .
+	
+	Assert isTrue: (terminal tieneAlUsuario: unUser) .
+	Assert isTrue: terminal tieneUnUsuarioLogueado .! !
 
-!UsersTest methodsFor: 'testing_users' stamp: 'dk 11/12/2021 00:52:03'!
-test002_cuandoUnUsuarioRootSeCrea_esteTieneUnNombreYUnaContraseña
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/12/2021 20:34:43'!
+test004_cuandoUnaTerminalSeRegistraConUnUsuario_esteYaExiste
 
-	| userRoot |
-	userRoot _ UserRoot conNombre: 'Diego' yContraseña: '1234' .
-
-	Assert that: userRoot nombre isEqualTo: 'Diego' .
-	Assert that: userRoot contraseña isEqualTo: '1234' .! !
+	"Setup"
+	| terminal unUser |
+	unUser _ User initializeConNombre: 'Diego' yContraseña: '1234' .
+	terminal _ Terminal new .
+	terminal registrar: unUser .
+	
+	Assert
+        should: [ terminal registrar: unUser  ]
+        signal: Error
+        withDescription: 'El usuario ya esta registrado' .! !
 
 
 !classDefinition: #Terminal category: 'Grupo1-TP-Final'!
@@ -53,24 +64,53 @@ Object subclass: #Terminal
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/12/2021 01:01:20'!
-agregarUsuario: unUsuario 
-	listaDeUsuarios add: unUsuario .! !
-
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/12/2021 01:05:00'!
-iniciarSesion: unUsuario 
-	usuarioLogueado _ unUsuario  .! !
-
-
 !Terminal methodsFor: 'initialization' stamp: 'dk 11/12/2021 01:02:46'!
 initialize
 
 	listaDeUsuarios _ Set new . ! !
 
+!Terminal methodsFor: 'initialization' stamp: 'dk 11/12/2021 20:04:51'!
+initializeIniciarComoUserRoot
 
-!Terminal methodsFor: 'testing' stamp: 'dk 11/12/2021 01:05:52'!
+	| userRoot |
+	userRoot _ UserRoot conNombre: 'root' yContraseña: 'root'.
+	usuarioLogueado _ userRoot .
+	listaDeUsuarios add: userRoot .! !
+
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/12/2021 19:58:18'!
+tieneAlUsuario: unUser 
+
+	^ listaDeUsuarios includes: unUser .! !
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/12/2021 19:52:12'!
 tieneUnUsuarioLogueado
-	^ usuarioLogueado notNil .! !
+
+	^ usuarioLogueado notNil ! !
+
+
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/12/2021 20:12:19'!
+iniciarSesion: unUserALoguease 
+	usuarioLogueado _ listaDeUsuarios detect: [:unUser | unUser esIgualElUserYContraseñaA: unUserALoguease] .! !
+
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/12/2021 20:44:11'!
+notEstaRegistrado: unUserARegistrarse
+	! !
+
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/12/2021 20:47:33'!
+registrar: unUserARegistrar
+	(listaDeUsuarios anySatisfy: [:unUser | unUser nombreEsIgual: (unUserARegistrar nombre)]) ifTrue: [self error: 'El usuario ya esta registrado'] ifFalse: [listaDeUsuarios add: unUserARegistrar].! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Terminal class' category: 'Grupo1-TP-Final'!
+Terminal class
+	instanceVariableNames: ''!
+
+!Terminal class methodsFor: 'instance creation' stamp: 'dk 11/12/2021 19:43:55'!
+iniciarComoUserRoot
+	^self new initializeIniciarComoUserRoot! !
+
 
 
 !classDefinition: #User category: 'Grupo1-TP-Final'!
@@ -88,33 +128,40 @@ contraseña
 nombre
 	^nombre! !
 
-
-!classDefinition: #UserPublic category: 'Grupo1-TP-Final'!
-User subclass: #UserPublic
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Grupo1-TP-Final'!
 
-!UserPublic methodsFor: 'initialization' stamp: 'dk 11/12/2021 00:49:04'!
-initializeConNombre: unNombre yContraseña: unaContraseña
+!User methodsFor: 'initialization' stamp: 'dk 11/12/2021 19:57:26'!
+initializeInitializeConNombre: unNombre yContraseña: unaContraseña 
+
 	nombre := unNombre.
 	contraseña := unaContraseña.! !
 
+
+!User methodsFor: 'testing' stamp: 'dk 11/12/2021 20:15:01'!
+contraseñaEsIgual: unaContraseña 
+	^ contraseña = unaContraseña ! !
+
+!User methodsFor: 'testing' stamp: 'dk 11/12/2021 20:14:23'!
+esIgualElUserYContraseñaA: unUser 
+	^ (self nombreEsIgual: unUser nombre) & (self contraseñaEsIgual: unUser contraseña)! !
+
+!User methodsFor: 'testing' stamp: 'dk 11/12/2021 20:14:46'!
+nombreEsIgual: unNombre 
+	^ nombre = unNombre ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'UserPublic class' category: 'Grupo1-TP-Final'!
-UserPublic class
+!classDefinition: 'User class' category: 'Grupo1-TP-Final'!
+User class
 	instanceVariableNames: ''!
 
-!UserPublic class methodsFor: 'instance creation' stamp: 'dk 11/12/2021 00:48:44'!
-conNombre: unNombre yContraseña: unaContraseña
-	^self new initializeConNombre: unNombre yContraseña: unaContraseña ! !
+!User class methodsFor: 'instance creation' stamp: 'dk 11/12/2021 19:57:05'!
+initializeConNombre: unNombre yContraseña: unaContraseña
+	^self new initializeInitializeConNombre: unNombre yContraseña: unaContraseña ! !
 
 
 !classDefinition: #UserRoot category: 'Grupo1-TP-Final'!
-User subclass: #UserRoot
-	instanceVariableNames: ''
+Object subclass: #UserRoot
+	instanceVariableNames: 'nombre contraseña'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
