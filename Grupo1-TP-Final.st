@@ -56,6 +56,20 @@ test004_cuandoUnaTerminalSeRegistraConUnUsuario_esteYaExiste
         signal: Error
         withDescription: 'El usuario ya esta registrado' .! !
 
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/12/2021 21:18:26'!
+test005_cuandoUnaTerminalSeRegistraConUnUsuario_esteYaExiste
+
+	"Setup"
+	| terminal unUser unUserNuevo |
+	unUser _ User initializeConNombre: 'Diego' yContraseña: '1234' .
+	unUserNuevo _ User initializeConNombre: 'Diego' yContraseña: '4321' .
+	terminal _ Terminal new .
+	
+	Assert
+        should: [ terminal iniciarSesion: unUserNuevo]
+        signal: Error
+        withDescription: 'El nombre y/o contraseña es incorrecta'.! !
+
 
 !classDefinition: #Terminal category: 'Grupo1-TP-Final'!
 Object subclass: #Terminal
@@ -89,9 +103,10 @@ tieneUnUsuarioLogueado
 	^ usuarioLogueado notNil ! !
 
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/12/2021 20:12:19'!
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/12/2021 21:21:12'!
 iniciarSesion: unUserALoguease 
-	usuarioLogueado _ listaDeUsuarios detect: [:unUser | unUser esIgualElUserYContraseñaA: unUserALoguease] .! !
+	
+	(listaDeUsuarios anySatisfy: [:unUser | unUser esIgualElUserYContraseñaA: unUserALoguease]) ifTrue: [usuarioLogueado _ unUserALoguease] ifFalse: [self error: 'El nombre y/o contraseña es incorrecta'].! !
 
 !Terminal methodsFor: 'public actions' stamp: 'dk 11/12/2021 20:44:11'!
 notEstaRegistrado: unUserARegistrarse
@@ -110,7 +125,6 @@ Terminal class
 !Terminal class methodsFor: 'instance creation' stamp: 'dk 11/12/2021 19:43:55'!
 iniciarComoUserRoot
 	^self new initializeIniciarComoUserRoot! !
-
 
 
 !classDefinition: #User category: 'Grupo1-TP-Final'!
