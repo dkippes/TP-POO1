@@ -1,3 +1,23 @@
+!classDefinition: #SistemaDeArchivosTest category: 'Grupo1-TP-Final'!
+TestCase subclass: #SistemaDeArchivosTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!SistemaDeArchivosTest methodsFor: 'sistemaDeArchivos_testing' stamp: 'TC 11/14/2021 21:56:40'!
+test001_cuandoUnaCarpetaEsCreada_EstaTieneUnNombre_UnaListaDeArchivosYUnaListaDeCarpetas
+
+	"Setup"
+	| unaCarpetaNueva  |
+	
+	unaCarpetaNueva _ Folder conNombre: 'root'.
+
+	Assert that: unaCarpetaNueva nombre isEqualTo: 'root'.
+	Assert isFalse: (unaCarpetaNueva tieneCarpetas).
+	Assert isFalse: (unaCarpetaNueva tieneArchivos)! !
+
+
 !classDefinition: #TerminalTest category: 'Grupo1-TP-Final'!
 TestCase subclass: #TerminalTest
 	instanceVariableNames: 'unUserRootDefault unUserRootDiego1234 unUserRootDiego4321'
@@ -162,6 +182,45 @@ test010_cuandoUnaTerminalSeCrea_unUsuarioRoot_modificaUnUsuarioInexistente
         signal: Error
         withDescription: self errorUsuarioNoExistente .! !
 
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/14/2021 22:02:41'!
+test011_cuandoUnUsuarioIniciaSesion_EsteTieneUnaCarpetaRoot
+	"Setup"
+	| unaTerminal |
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado .
+		
+
+	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz).! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/14/2021 22:24:20'!
+test012_cuandoUnUsuarioEscribeMkDirEnLaTerminal_CreaUnaCarpetaEnElDirectorio
+	"Setup"
+	| unaTerminal unaCarpeta |
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaCarpeta _ Folder	 conNombre: 'Tomas'.
+
+	"Exersice" 
+	unaTerminal mkdir: unaCarpeta.
+
+	"Assert"
+	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz).
+	Assert isTrue: (unaTerminal tieneCarpetasEnElDirectorioActual).! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/14/2021 22:30:52'!
+test013_cuandoUnUsuarioEscribeMkDirEnLaTerminal_CreaUnaCarpetaEnElDirectorio_EstaYaExiste
+	
+	| unaTerminal unaCarpeta |
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaCarpeta _ Folder	 conNombre: 'Tomas'.
+
+	"Exersice" 
+	unaTerminal mkdir: unaCarpeta.
+
+	"Assert"
+	Assert
+        should: [unaTerminal mkdir: unaCarpeta]
+        signal: Error
+        withDescription: 'La carpeta ya existe en este directorio'.! !
+
 
 !TerminalTest methodsFor: 'setUp/tearDown' stamp: 'dk 11/14/2021 21:09:11'!
 setUp
@@ -171,20 +230,76 @@ setUp
 	unUserRootDiego4321 _ RootUser conNombre: 'Diego' yContraseña: '4321' .! !
 
 
-!classDefinition: #Terminal category: 'Grupo1-TP-Final'!
-Object subclass: #Terminal
-	instanceVariableNames: 'listaDeUsuarios usuarioLogueado userLogueado'
+!classDefinition: #Folder category: 'Grupo1-TP-Final'!
+Object subclass: #Folder
+	instanceVariableNames: 'nombreCarpeta listaDeCarpetas listaDeArchivos'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!Terminal methodsFor: 'initialization' stamp: 'dk 11/14/2021 20:27:17'!
+!Folder methodsFor: 'initialization' stamp: 'TC 11/14/2021 21:51:23'!
+inicializarConNombre: unNombre
+	nombreCarpeta:= unNombre.! !
+
+!Folder methodsFor: 'initialization' stamp: 'TC 11/14/2021 21:57:33'!
+initialize
+
+	listaDeCarpetas:= Set new.
+	listaDeArchivos:= Set new.! !
+
+
+!Folder methodsFor: 'accessing' stamp: 'TC 11/14/2021 22:40:38'!
+listaDeCarpetas
+	^listaDeCarpetas! !
+
+!Folder methodsFor: 'accessing' stamp: 'TC 11/14/2021 21:52:04'!
+nombre
+	^ nombreCarpeta.! !
+
+
+!Folder methodsFor: 'testing' stamp: 'TC 11/14/2021 22:41:27'!
+nombreEsIgual: unNombre
+	^nombreCarpeta = unNombre.! !
+
+!Folder methodsFor: 'testing' stamp: 'TC 11/14/2021 21:58:34'!
+tieneArchivos
+	^ listaDeArchivos notEmpty.! !
+
+!Folder methodsFor: 'testing' stamp: 'TC 11/14/2021 21:58:10'!
+tieneCarpetas
+	^ listaDeCarpetas notEmpty.! !
+
+
+!Folder methodsFor: 'public actions' stamp: 'TC 11/14/2021 22:21:13'!
+agregarCarpeta: unaCarpeta 
+	listaDeCarpetas add: unaCarpeta.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Folder class' category: 'Grupo1-TP-Final'!
+Folder class
+	instanceVariableNames: ''!
+
+!Folder class methodsFor: 'instance creation' stamp: 'TC 11/14/2021 21:50:48'!
+conNombre: unNombre
+	^self new inicializarConNombre: unNombre.! !
+
+
+!classDefinition: #Terminal category: 'Grupo1-TP-Final'!
+Object subclass: #Terminal
+	instanceVariableNames: 'listaDeUsuarios usuarioLogueado userLogueado carpetaActual'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!Terminal methodsFor: 'initialization' stamp: 'TC 11/14/2021 22:05:54'!
 initialize
 
 	| defaultUserRoot |
 	defaultUserRoot _ RootUser conNombre: 'root' yContraseña: 'root'.
 	listaDeUsuarios _ Set new .
 	listaDeUsuarios add: defaultUserRoot .	
+	carpetaActual _ Folder conNombre: 'root'
 	! !
 
 !Terminal methodsFor: 'initialization' stamp: 'dk 11/14/2021 20:26:56'!
@@ -200,6 +315,10 @@ estaElUsuarioLogueado: unUser
 
 	^ unUser esIgualElUserYContraseñaA: usuarioLogueado ! !
 
+!Terminal methodsFor: 'testing' stamp: 'TC 11/14/2021 22:07:46'!
+estaParadaEnElDirectorioRaiz
+	^ 'root' = carpetaActual nombre.! !
+
 !Terminal methodsFor: 'testing' stamp: 'dk 11/14/2021 20:30:32'!
 tieneAlUsuario: unUser 
 
@@ -208,6 +327,10 @@ tieneAlUsuario: unUser
 !Terminal methodsFor: 'testing' stamp: 'dk 11/14/2021 20:58:39'!
 tieneAlUsuarioLogueado: unUsuario 
 	^ (self tieneUnUsuarioLogueado) & (self estaElUsuarioLogueado: unUsuario) .! !
+
+!Terminal methodsFor: 'testing' stamp: 'TC 11/14/2021 22:25:35'!
+tieneCarpetasEnElDirectorioActual
+	^ carpetaActual tieneCarpetas.! !
 
 !Terminal methodsFor: 'testing' stamp: 'dk 11/14/2021 20:30:48'!
 tieneUnUsuarioLogueado
@@ -244,6 +367,16 @@ iniciarSesion: unUserALoguease
 	(self unUsuarioTieneElMismoNombreYContraseñaQue: unUserALoguease) 
 		ifTrue: [usuarioLogueado _ unUserALoguease] 
 		ifFalse: [self errorContraseñaOUsuarioIncorrecto].! !
+
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/14/2021 22:40:17'!
+mkdir: unaCarpeta
+
+	|listaDeCarpetasEnElDirectorioActual|
+	listaDeCarpetasEnElDirectorioActual _ carpetaActual listaDeCarpetas.
+	
+	(listaDeCarpetasEnElDirectorioActual anySatisfy: [:unaCarpetaEnLaLista | (unaCarpetaEnLaLista nombreEsIgual:  unaCarpeta nombre)]) 
+		ifTrue: [self error: 'La carpeta ya existe en este directorio'.] 
+		ifFalse: [carpetaActual agregarCarpeta: unaCarpeta.].! !
 
 !Terminal methodsFor: 'public actions' stamp: 'dk 11/14/2021 20:37:12'!
 modificarUsuario: unUserAModificar por: unUserConModificaciones 
