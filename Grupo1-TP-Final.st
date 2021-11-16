@@ -5,17 +5,32 @@ TestCase subclass: #SistemaDeArchivosTest
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!SistemaDeArchivosTest methodsFor: 'sistemaDeArchivos_testing' stamp: 'TC 11/14/2021 21:56:40'!
-test001_cuandoUnaCarpetaEsCreada_EstaTieneUnNombre_UnaListaDeArchivosYUnaListaDeCarpetas
+!SistemaDeArchivosTest methodsFor: 'sistemaDeArchivos_testing' stamp: 'TC 11/15/2021 23:54:54'!
+test001_cuandoUnaCarpetaEsCreada_EstaTieneUnNombre_UnaListaDeArchivos_UnaListaDeCarpetas_UnaFechaDeCreacionYUnaFechaDeModificacion
 
 	"Setup"
-	| unaCarpetaNueva  |
+	| unaCarpetaNueva  unaFechaDeCreacion |
 	
 	unaCarpetaNueva _ Folder conNombre: 'root'.
+	unaFechaDeCreacion _ FixedGregorianDate today.
 
 	Assert that: unaCarpetaNueva nombre isEqualTo: 'root'.
 	Assert isFalse: (unaCarpetaNueva tieneCarpetas).
-	Assert isFalse: (unaCarpetaNueva tieneArchivos)! !
+	Assert isFalse: (unaCarpetaNueva tieneArchivos). 
+	Assert that: unaCarpetaNueva fechaDeCreacion isEqualTo: unaFechaDeCreacion.
+	Assert that: unaCarpetaNueva fechaDeModificacion isEqualTo: unaFechaDeCreacion.! !
+
+!SistemaDeArchivosTest methodsFor: 'sistemaDeArchivos_testing' stamp: 'TC 11/15/2021 23:52:21'!
+test002_cuandoUnArchivoSeCrea_EsteTieneNombre_UnaFechaDeCreacionYUnaFechaDeModificacion
+	"Setup"
+	| unArchivoNuevo unaFechaDeCreacion |
+	
+	unArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	unaFechaDeCreacion _ FixedGregorianDate today.
+	
+	Assert that: unArchivoNuevo nombre isEqualTo: 'Archivo1.txt'.
+	Assert that: unArchivoNuevo fechaDeCreacion isEqualTo: unaFechaDeCreacion.
+	Assert that: unArchivoNuevo fechaDeModificacion isEqualTo: unaFechaDeCreacion.! !
 
 
 !classDefinition: #TerminalTest category: 'Grupo1-TP-Final'!
@@ -306,6 +321,85 @@ test018_cuandoUnUsuarioIngresaAVariasCarpetas_esteLuegoRegresaPasandoseDeRoot_no
         withDescription: 'No se puede volver, estas parado en root' .
 	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz) .! !
 
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/15/2021 23:57:40'!
+test019_cuandoUnUsuarioCreaUnArchivo_EsteLoCreaEnElDirectorioRaiz_ConElComandoTouch
+
+	| unaTerminal unArchivoNuevo |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	
+	"Exercise"
+	unaTerminal touch: unArchivoNuevo.
+	
+	"Assert"
+	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz) .
+	Assert isTrue: (unaTerminal tieneElArchivoEnElDirectorioActual: unArchivoNuevo).! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/16/2021 00:02:58'!
+test020_cuandoUnUsuarioCreaUnArchivo_EsteYaExisteEnElDirectorioActual
+
+	| unaTerminal unArchivoNuevo |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	
+	"Exercise"
+	unaTerminal touch: unArchivoNuevo.
+	
+	"Assert"
+	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz) .
+	Assert
+        should: [unaTerminal touch: unArchivoNuevo.]
+        signal: Error
+        withDescription: 'No se puede crear un archivo con el mismo nombre' .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/16/2021 00:17:04'!
+test021_cuandoUnUsuarioListaElContenidoDelDirectorio_ConElComandols_EsteMuestraTodosLosArchivosYLasCarpetas
+
+	| unaTerminal unArchivoNuevo unaCarpetaNueva listaDeArchivosYCarpetas |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	unaCarpetaNueva _ Folder conNombre: 'Diego'.
+	listaDeArchivosYCarpetas _ Set new.
+	listaDeArchivosYCarpetas add: unArchivoNuevo.
+	listaDeArchivosYCarpetas add: unaCarpetaNueva.
+	
+	"Exercise"
+	unaTerminal touch: unArchivoNuevo.
+	unaTerminal mkdir: unaCarpetaNueva.
+	
+	"Assert"
+	Assert that: unaTerminal ls isEqualTo: listaDeArchivosYCarpetas.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/16/2021 00:25:03'!
+test022_cuandoUnUsuarioListaElContenidoDelDirectorio_ConElComandols_EsteNoTieneNadaEnElDirectorioActual
+
+	| unaTerminal listaDeArchivosYCarpetas |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	listaDeArchivosYCarpetas _ Set new.
+
+	"Assert"
+	Assert that: unaTerminal ls isEqualTo: listaDeArchivosYCarpetas.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/16/2021 00:37:52'!
+test023_cuandoUnUsuarioBorraUnArchivo_EsteDesapareceDelDirectorioActual
+
+	| unaTerminal unaArchivoNuevo listaDeArchivosYCarpetas |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	listaDeArchivosYCarpetas _ Set new.
+	
+	"Exercise"
+	unaTerminal touch: unaArchivoNuevo.
+	unaTerminal rm: unaArchivoNuevo.
+
+	"Assert"
+	Assert that: unaTerminal ls isEqualTo: listaDeArchivosYCarpetas.! !
+
 
 !TerminalTest methodsFor: 'setUp/tearDown' stamp: 'dk 11/14/2021 21:09:11'!
 setUp
@@ -315,9 +409,56 @@ setUp
 	unUserRootDiego4321 _ RootUser conNombre: 'Diego' yContraseña: '4321' .! !
 
 
+!classDefinition: #File category: 'Grupo1-TP-Final'!
+Object subclass: #File
+	instanceVariableNames: 'nombre fechaDeCreacion fechaDeModificacion'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!File methodsFor: 'initialization' stamp: 'TC 11/15/2021 23:47:12'!
+initialize
+
+	fechaDeCreacion _ FixedGregorianDate today.
+	fechaDeModificacion _ FixedGregorianDate today.! !
+
+!File methodsFor: 'initialization' stamp: 'TC 11/15/2021 23:41:17'!
+initializeConNombre: unNombre 
+	nombre := unNombre.! !
+
+
+!File methodsFor: 'accessing' stamp: 'TC 11/15/2021 23:52:39'!
+fechaDeCreacion
+	^fechaDeCreacion! !
+
+!File methodsFor: 'accessing' stamp: 'TC 11/15/2021 23:52:49'!
+fechaDeModificacion
+	^fechaDeModificacion! !
+
+!File methodsFor: 'accessing' stamp: 'TC 11/15/2021 23:41:30'!
+nombre
+	^nombre! !
+
+
+!File methodsFor: 'testing' stamp: 'TC 11/16/2021 00:11:19'!
+nombreEsIgual: nombreArchivo
+	^ (nombre = nombreArchivo) ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'File class' category: 'Grupo1-TP-Final'!
+File class
+	instanceVariableNames: ''!
+
+!File class methodsFor: 'instance creation' stamp: 'TC 11/15/2021 23:40:45'!
+conNombre: unNombre
+	
+	^self new initializeConNombre: unNombre. ! !
+
+
 !classDefinition: #Folder category: 'Grupo1-TP-Final'!
 Object subclass: #Folder
-	instanceVariableNames: 'nombreCarpeta listaDeCarpetas listaDeArchivos'
+	instanceVariableNames: 'nombreCarpeta listaDeCarpetas listaDeArchivos fechaDeCreacion fechaDeModificacion'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
@@ -326,12 +467,26 @@ Object subclass: #Folder
 inicializarConNombre: unNombre
 	nombreCarpeta _ unNombre.! !
 
-!Folder methodsFor: 'initialization' stamp: 'dk 11/15/2021 23:17:41'!
+!Folder methodsFor: 'initialization' stamp: 'TC 11/15/2021 23:49:58'!
 initialize
 
 	listaDeCarpetas _ Set new.
-	listaDeArchivos _ Set new.! !
+	listaDeArchivos _ Set new. 
+	fechaDeCreacion _ FixedGregorianDate today.
+	fechaDeModificacion _ FixedGregorianDate today.! !
 
+
+!Folder methodsFor: 'accessing' stamp: 'TC 11/15/2021 23:55:08'!
+fechaDeCreacion
+	^fechaDeCreacion! !
+
+!Folder methodsFor: 'accessing' stamp: 'TC 11/15/2021 23:55:22'!
+fechaDeModificacion
+	^fechaDeModificacion! !
+
+!Folder methodsFor: 'accessing' stamp: 'TC 11/15/2021 23:59:18'!
+listaDeArchivos
+	^listaDeArchivos! !
 
 !Folder methodsFor: 'accessing' stamp: 'dk 11/15/2021 23:17:47'!
 listaDeCarpetas
@@ -425,6 +580,10 @@ tieneAlUsuarioLogueado: unUsuario
 tieneCarpetasEnElDirectorioActual
 	^ carpetaActual tieneCarpetas.! !
 
+!Terminal methodsFor: 'testing' stamp: 'TC 11/16/2021 00:00:16'!
+tieneElArchivoEnElDirectorioActual: unArchivo
+	^ (carpetaActual listaDeArchivos) includes: unArchivo.! !
+
 !Terminal methodsFor: 'testing' stamp: 'dk 11/14/2021 20:30:48'!
 tieneUnUsuarioLogueado
 
@@ -482,6 +641,11 @@ cd: unaCarpeta
 	listaDeDirectoriosVistos add: carpetaSiguiente .
 	carpetaActual _ (listaDeDirectoriosVistos last) .! !
 
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/16/2021 00:10:17'!
+errorArchivoExistente
+
+	^ self error: 'No se puede crear un archivo con el mismo nombre'! !
+
 !Terminal methodsFor: 'public actions' stamp: 'dk 11/15/2021 23:08:43'!
 ingresarUsuario: unUserAIngresar
 	
@@ -517,6 +681,26 @@ modificarUsuario: unUserAModificar por: unUserConModificaciones
 			self errorUsuarioNoExistente
 		].! !
 
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/16/2021 00:42:25'!
+rm: unArchivoABorrar
+	|archivoABorrar listaDeArchivos|
+	listaDeArchivos _ carpetaActual listaDeArchivos.
+	
+	archivoABorrar _ listaDeArchivos detect:[: unArchivo| unArchivo nombreEsIgual: unArchivoABorrar nombre] 
+	ifNone:[self error: 'El archivo a borrar no existe'].
+	carpetaActual listaDeArchivos remove: archivoABorrar.
+	! !
+
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/16/2021 00:10:24'!
+touch: unArchivo
+	|listaDeArchivosEnElDirectorioActual|
+	listaDeArchivosEnElDirectorioActual _ carpetaActual listaDeArchivos.
+	(listaDeArchivosEnElDirectorioActual anySatisfy: [:unArchivoEnLaLista| unArchivoEnLaLista nombreEsIgual: unArchivo nombre]) 
+	ifTrue:[self errorArchivoExistente]
+	ifFalse:[listaDeArchivosEnElDirectorioActual add: unArchivo.]
+	
+	! !
+
 
 !Terminal methodsFor: 'accessing' stamp: 'dk 11/15/2021 23:13:48'!
 carpetaActual
@@ -537,6 +721,14 @@ errorLaCarpetaYaExiste
 errorUsuarioNoExistente
 
 	^ self error: 'El usuario no existe'! !
+
+!Terminal methodsFor: 'accessing' stamp: 'TC 11/16/2021 00:21:31'!
+ls
+	|listaDeArchivosYCarpetas|
+	listaDeArchivosYCarpetas _ Set new.
+	listaDeArchivosYCarpetas addAll: carpetaActual listaDeArchivos.
+	listaDeArchivosYCarpetas addAll: carpetaActual listaDeCarpetas.
+	^ listaDeArchivosYCarpetas.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
