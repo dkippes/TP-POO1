@@ -35,7 +35,7 @@ test002_cuandoUnArchivoSeCrea_EsteTieneNombre_UnaFechaDeCreacionYUnaFechaDeModif
 
 !classDefinition: #TerminalTest category: 'Grupo1-TP-Final'!
 TestCase subclass: #TerminalTest
-	instanceVariableNames: 'unUserRootDefault unUserRootDiego1234 unUserRootDiego4321'
+	instanceVariableNames: 'unUserRootDefault unUserRootDiego1234 unUserRootDiego4321 unUserPublicDiego4321 carpetaTomas carpetaDiego archivoDeTexto'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
@@ -58,7 +58,22 @@ unaTerminalConUnUsuarioRootDefaultLogueado
 	^ unaTerminal .! !
 
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 20:59:26'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:02:33'!
+errorNoSePuedeRetrocederDesdeRoot
+
+	^ 'No se puede volver, estas parado en root'! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:59:36'!
+errorPorCarpetaInexistente
+
+	^ 'La carpeta no existe en este directorio'! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:07:07'!
+errorPorCrearUnArchivoConElMismoNombreEnElDirectorio
+
+	^ 'No se puede crear un archivo con el mismo nombre'! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:17:12'!
 test001_cuandoUnaTerminalSeCrea_iniciaSesionUnUsuarioRoot
 
 	"Setup"
@@ -68,8 +83,8 @@ test001_cuandoUnaTerminalSeCrea_iniciaSesionUnUsuarioRoot
 	
 	Assert isTrue: (terminal tieneAlUsuarioLogueado: unUsuarioRoot) .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 20:57:54'!
-test002_cuandoUnaTerminalSeCrea_iniciaSesionUnUsuario
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:22:09'!
+test002_cuandoUnaTerminalSeCrea_unUsuarioRoot_registraUnUsuario_esteIniciaSesion
 
 	"Setup"
 	| unUsuarioLogueado unaTerminal |
@@ -82,7 +97,7 @@ test002_cuandoUnaTerminalSeCrea_iniciaSesionUnUsuario
 	
 	Assert isTrue: (unaTerminal tieneAlUsuarioLogueado: unUsuarioLogueado) .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 21:02:45'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:22:55'!
 test003_cuandoUnaTerminalSeCrea_unUsuarioTrataDeLoguearseInsactifactoriamente
 
 	"Setup & Exercise"
@@ -94,7 +109,7 @@ test003_cuandoUnaTerminalSeCrea_unUsuarioTrataDeLoguearseInsactifactoriamente
         signal: Error
         withDescription: self errorContraseñaOUsuarioIncorrecto .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 21:02:37'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:23:28'!
 test004_cuandoUnaTerminalSeCrea_unUsuarioRootTrataDeLoguearseInsactifactoriamente
 
 	"Setup"
@@ -106,41 +121,39 @@ test004_cuandoUnaTerminalSeCrea_unUsuarioRootTrataDeLoguearseInsactifactoriament
         signal: Error
         withDescription: self errorContraseñaOUsuarioIncorrecto .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 21:04:12'!
-test005_cuandoUnaTerminalSeCrea_unUsuarioRoot_agregaUnUsuario
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:48:04'!
+test005_cuandoUnaTerminalSeCrea_unUsuarioRoot_registraUnUsuario
 
 	"Setup"
 	| unaTerminal unUsuarioAAgregar |
-	unUsuarioAAgregar _ PublicUser conNombre: 'Diego' yContraseña: '4321' .
+	unUsuarioAAgregar _ unUserPublicDiego4321 .
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado .
 	
 	"Exercise"
 	unUserRootDefault registrarUsuario: unUsuarioAAgregar en: unaTerminal .
 	
-	Assert isTrue: (unaTerminal tieneAlUsuario: unUsuarioAAgregar) .
-	Assert isTrue: unaTerminal tieneUnUsuarioLogueado .! !
+	Assert isTrue: (unaTerminal tieneAlUsuario: unUsuarioAAgregar) .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 21:04:53'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:50:00'!
 test006_cuandoUnaTerminalSeCrea_unUsuarioRoot_borraUnUsuario
 
 	"Setup"
 	| unaTerminal unUsuarioAAgregar |
-	unUsuarioAAgregar _ PublicUser conNombre: 'Diego' yContraseña: '4321' .
+	unUsuarioAAgregar _ unUserPublicDiego4321 .
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado .
 	
 	"Exercise"
 	unUserRootDefault registrarUsuario: unUsuarioAAgregar en: unaTerminal .
 	unUserRootDefault borrarUsuario: unUsuarioAAgregar en: unaTerminal .
 	
-	Assert isFalse: (unaTerminal tieneAlUsuario: unUsuarioAAgregar) .
-	Assert isTrue: unaTerminal tieneUnUsuarioLogueado .! !
+	Assert isFalse: (unaTerminal tieneAlUsuario: unUsuarioAAgregar) .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 21:07:40'!
-test007_cuandoUnaTerminalSeCrea_unUsuarioRoot_trataDeAgregarUnUsuarioYaExistente
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:51:10'!
+test007_cuandoUnaTerminalSeCrea_unUsuarioRoot_noPuedeAgregarUnUsuarioYaExistente
 
 	"Setup"
 	| unaTerminal unUsuarioAAgregar |
-	unUsuarioAAgregar _ PublicUser conNombre: 'Diego' yContraseña: '4321' .
+	unUsuarioAAgregar _ unUserPublicDiego4321 .
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado .
 	
 	"Exercise"
@@ -152,26 +165,25 @@ test007_cuandoUnaTerminalSeCrea_unUsuarioRoot_trataDeAgregarUnUsuarioYaExistente
         withDescription: self errorContraseñaOUsuarioIncorrecto .
 ! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 21:07:47'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:51:33'!
 test008_cuandoUnaTerminalSeCrea_unUsuarioRoot_trataDeBorraUnUsuarioInexistente
 
 	"Setup"
-	| terminal unUsuarioAAgregar |
-	unUsuarioAAgregar _ PublicUser conNombre: 'Diego' yContraseña: '4321' .
+	| terminal |
 	terminal _ self unaTerminalConUnUsuarioRootDefaultLogueado .
 	
 	Assert
-        should: [ unUserRootDefault borrarUsuario: unUsuarioAAgregar en: terminal  ]
+        should: [ unUserRootDefault borrarUsuario: unUserPublicDiego4321 en: terminal  ]
         signal: Error
         withDescription: self errorUsuarioNoExistente .
 ! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 21:11:26'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:52:52'!
 test009_cuandoUnaTerminalSeCrea_unUsuarioRoot_modificaUnUsuario
 
 	"Setup"
 	| unaTerminal unUsuarioAAgregar unUsuarioModificado |
-	unUsuarioAAgregar _ PublicUser conNombre: 'Diego' yContraseña: '4321' .
+	unUsuarioAAgregar _ unUserPublicDiego4321 .
 	unUsuarioModificado _ PublicUser conNombre: 'Tomas' yContraseña: '9876' .
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado .
 	
@@ -180,11 +192,10 @@ test009_cuandoUnaTerminalSeCrea_unUsuarioRoot_modificaUnUsuario
 	unUserRootDefault modificarUsuario: unUsuarioAAgregar por: unUsuarioModificado en: unaTerminal .
 	
 	Assert isFalse: (unaTerminal tieneAlUsuario: unUsuarioAAgregar) .
-	Assert isTrue: unaTerminal tieneUnUsuarioLogueado .
 ! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 21:11:16'!
-test010_cuandoUnaTerminalSeCrea_unUsuarioRoot_modificaUnUsuarioInexistente
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:53:17'!
+test010_cuandoUnaTerminalSeCrea_unUsuarioRoot_noPuedeModificarUsuarioInexistente
 
 	"Setup"
 	| unaTerminal unUsuarioAAgregar unUsuarioModificado |
@@ -197,35 +208,35 @@ test010_cuandoUnaTerminalSeCrea_unUsuarioRoot_modificaUnUsuarioInexistente
         signal: Error
         withDescription: self errorUsuarioNoExistente .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/14/2021 22:02:41'!
-test011_cuandoUnUsuarioIniciaSesion_EsteTieneUnaCarpetaRoot
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:53:59'!
+test011_cuandoUnUsuarioIniciaSesion_esteEstaParadoEnLaCarpetaRoot
+
 	"Setup"
 	| unaTerminal |
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado .
 		
-
 	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz).! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/14/2021 22:24:20'!
-test012_cuandoUnUsuarioEscribeMkDirEnLaTerminal_CreaUnaCarpetaEnElDirectorio
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:57:55'!
+test012_cuandoUnUsuarioEscribeMkDirEnLaTerminal_creaUnaCarpetaEnElDirectorio
+
 	"Setup"
-	| unaTerminal unaCarpeta |
+	| unaTerminal |
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unaCarpeta _ Folder	 conNombre: 'Tomas'.
 
 	"Exersice" 
-	unaTerminal mkdir: unaCarpeta.
+	unaTerminal mkdir: carpetaTomas .
 
 	"Assert"
 	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz).
 	Assert isTrue: (unaTerminal tieneCarpetasEnElDirectorioActual).! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 23:08:50'!
-test013_cuandoUnUsuarioEscribeMkDirEnLaTerminal_CreaUnaCarpetaEnElDirectorio_EstaYaExiste
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:58:18'!
+test013_cuandoUnUsuarioEscribeMkDirEnLaTerminal_noPuedeCrearUnaCarpetaYaExistente
 
 	| unaTerminal unaCarpetaNueva |
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unaCarpetaNueva _ Folder	 conNombre: 'Tomas'.
+	unaCarpetaNueva _ carpetaTomas .
 
 	"Exersice" 
 	unaTerminal mkdir: unaCarpetaNueva .
@@ -235,26 +246,26 @@ test013_cuandoUnUsuarioEscribeMkDirEnLaTerminal_CreaUnaCarpetaEnElDirectorio_Est
 	Assert isFalse: (unaTerminal estaParadaEnElDirectorioRaiz).
 	Assert that: (unaTerminal carpetaActual) isEqualTo: unaCarpetaNueva .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 23:06:49'!
-test014_cuandoUnUsuarioEscribeMkDirEnLaTerminal_CreaUnaCarpetaEnElDirectorio_EstaNoYaExiste
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:59:36'!
+test014_cuandoUnUsuarioEscribeCDEnLaTerminal_noPuedeIngresarAUnaCarpetaInexistente
 
 	| unaTerminal unaCarpeta |
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unaCarpeta _ Folder	 conNombre: 'Tomas'.
+	unaCarpeta _ carpetaTomas .
 
 	"Assert"
 	Assert
         should: [unaTerminal cd: unaCarpeta .]
         signal: Error
-        withDescription: 'La carpeta no existe en este directorio' .! !
+        withDescription: self errorPorCarpetaInexistente .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 23:12:35'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:00:29'!
 test015_cuandoUnUsuarioEscribeCDParaVolverEnLaTerminal_esteVuelveUnaCarpetaHaciaAtras
 
 	| unaTerminal unaCarpetaNueva otraCarpetaNueva |
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unaCarpetaNueva _ Folder	 conNombre: 'Tomas'.
-	otraCarpetaNueva _ Folder	 conNombre: 'Diego'.
+	unaCarpetaNueva _ carpetaTomas .
+	otraCarpetaNueva _ carpetaDiego .
 
 	"Exersice" 
 	unaTerminal mkdir: unaCarpetaNueva .
@@ -267,8 +278,8 @@ test015_cuandoUnUsuarioEscribeCDParaVolverEnLaTerminal_esteVuelveUnaCarpetaHacia
 	Assert isFalse: (unaTerminal estaParadaEnElDirectorioRaiz).
 	Assert that: (unaTerminal carpetaActual) isEqualTo: unaCarpetaNueva .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/14/2021 23:16:18'!
-test016_cuandoUnUsuarioEscribeCDParaVolverEnLaTerminal_estandoEnLaCarpetaRoot_esteNoPuedeRegresarALaCarpetaAnterior
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:02:33'!
+test016_cuandoUnUsuarioEscribeCDParaVolverEnLaTerminal_esteNoPuedeRegresarALaCarpetaAnterior_porEstarEnElDirectorioRoot
 
 	| unaTerminal |
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
@@ -277,15 +288,15 @@ test016_cuandoUnUsuarioEscribeCDParaVolverEnLaTerminal_estandoEnLaCarpetaRoot_es
 	Assert
         should: [unaTerminal cd .]
         signal: Error
-        withDescription: 'No se puede volver, estas parado en root' .! !
+        withDescription: self errorNoSePuedeRetrocederDesdeRoot .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/15/2021 23:05:02'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:01:31'!
 test017_cuandoUnUsuarioIngresaAVariasCarpetas_esteLuegoRegresaARoot
 
 	| unaTerminal otraCarpetaDiego unaCarpetaTomas |
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unaCarpetaTomas _ Folder	 conNombre: 'Tomas'.
-	otraCarpetaDiego _ Folder	 conNombre: 'Diego'.
+	unaCarpetaTomas _ carpetaTomas .
+	otraCarpetaDiego _ carpetaDiego .
 
 	"Exersice"
 	unaTerminal mkdir: unaCarpetaTomas .
@@ -298,13 +309,13 @@ test017_cuandoUnUsuarioIngresaAVariasCarpetas_esteLuegoRegresaARoot
 	"Assert"
 	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz) .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/15/2021 23:05:52'!
-test018_cuandoUnUsuarioIngresaAVariasCarpetas_esteLuegoRegresaPasandoseDeRoot_noPuedeRetrocederMasAllaDeLaCarpetaRoot
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 17:34:39'!
+test018_cuandoUnUsuarioIngresaAVariasCarpetas_esteSePosicionaEnRoot
 
 	| unaTerminal otraCarpetaDiego unaCarpetaTomas |
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unaCarpetaTomas _ Folder	 conNombre: 'Tomas'.
-	otraCarpetaDiego _ Folder	 conNombre: 'Diego'.
+	unaCarpetaTomas _ carpetaTomas .
+	otraCarpetaDiego _ carpetaDiego .
 
 	"Exersice"
 	unaTerminal mkdir: unaCarpetaTomas .
@@ -318,63 +329,61 @@ test018_cuandoUnUsuarioIngresaAVariasCarpetas_esteLuegoRegresaPasandoseDeRoot_no
 	Assert
         should: [unaTerminal cd .]
         signal: Error
-        withDescription: 'No se puede volver, estas parado en root' .
+        withDescription: self errorNoSePuedeRetrocederDesdeRoot .
 	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz) .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/15/2021 23:57:40'!
-test019_cuandoUnUsuarioCreaUnArchivo_EsteLoCreaEnElDirectorioRaiz_ConElComandoTouch
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:06:15'!
+test019_cuandoUnUsuarioEscribeElComandoTouch_esteCreaUnArchivo
 
 	| unaTerminal unArchivoNuevo |
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	unArchivoNuevo _ File conNombre: 'Archivo1.txt' .
 	
 	"Exercise"
 	unaTerminal touch: unArchivoNuevo.
 	
 	"Assert"
-	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz) .
 	Assert isTrue: (unaTerminal tieneElArchivoEnElDirectorioActual: unArchivoNuevo).! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/16/2021 00:02:58'!
-test020_cuandoUnUsuarioCreaUnArchivo_EsteYaExisteEnElDirectorioActual
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:08:13'!
+test020_cuandoUnUsuarioCreaUnArchivo_noPuedeCrearloPorque_esteYaExisteEnElDirectorioActual
 
 	| unaTerminal unArchivoNuevo |
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	unArchivoNuevo _ archivoDeTexto .
 	
 	"Exercise"
 	unaTerminal touch: unArchivoNuevo.
 	
 	"Assert"
-	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz) .
 	Assert
         should: [unaTerminal touch: unArchivoNuevo.]
         signal: Error
-        withDescription: 'No se puede crear un archivo con el mismo nombre' .! !
+        withDescription: self errorPorCrearUnArchivoConElMismoNombreEnElDirectorio .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/16/2021 00:17:04'!
-test021_cuandoUnUsuarioListaElContenidoDelDirectorio_ConElComandols_EsteMuestraTodosLosArchivosYLasCarpetas
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:08:36'!
+test021_cuandoUnUsuarioListaElContenidoDelDirectorio_conElComandoLS_esteListaTodosLosArchivosYLasCarpetas
 
-	| unaTerminal unArchivoNuevo unaCarpetaNueva listaDeArchivosYCarpetas |
+	| unaTerminal unArchivoDeTexto unaCarpetaNueva listaDeArchivosYCarpetas |
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	unArchivoDeTexto _ archivoDeTexto .
 	unaCarpetaNueva _ Folder conNombre: 'Diego'.
 	listaDeArchivosYCarpetas _ Set new.
-	listaDeArchivosYCarpetas add: unArchivoNuevo.
+	listaDeArchivosYCarpetas add: unArchivoDeTexto.
 	listaDeArchivosYCarpetas add: unaCarpetaNueva.
 	
 	"Exercise"
-	unaTerminal touch: unArchivoNuevo.
+	unaTerminal touch: unArchivoDeTexto.
 	unaTerminal mkdir: unaCarpetaNueva.
 	
 	"Assert"
-	Assert that: unaTerminal ls isEqualTo: listaDeArchivosYCarpetas.! !
+	Assert that: (unaTerminal ls) isEqualTo: listaDeArchivosYCarpetas.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/16/2021 00:25:03'!
-test022_cuandoUnUsuarioListaElContenidoDelDirectorio_ConElComandols_EsteNoTieneNadaEnElDirectorioActual
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:09:10'!
+test022_cuandoUnUsuarioListaElContenidoDelDirectorio_conElComandoLS_noTieneNadaEnElDirectorioActual
 
 	| unaTerminal listaDeArchivosYCarpetas |
 	"Setup"
@@ -382,15 +391,15 @@ test022_cuandoUnUsuarioListaElContenidoDelDirectorio_ConElComandols_EsteNoTieneN
 	listaDeArchivosYCarpetas _ Set new.
 
 	"Assert"
-	Assert that: unaTerminal ls isEqualTo: listaDeArchivosYCarpetas.! !
+	Assert that: (unaTerminal ls) isEqualTo: listaDeArchivosYCarpetas.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/16/2021 00:37:52'!
-test023_cuandoUnUsuarioBorraUnArchivo_EsteDesapareceDelDirectorioActual
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:09:50'!
+test023_cuandoUnUsuarioBorraUnArchivo_conElComandoRM_esteSeBorraDelDirectorioActual
 
 	| unaTerminal unaArchivoNuevo listaDeArchivosYCarpetas |
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unaArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	unaArchivoNuevo _ archivoDeTexto .
 	listaDeArchivosYCarpetas _ Set new.
 	
 	"Exercise"
@@ -400,27 +409,132 @@ test023_cuandoUnUsuarioBorraUnArchivo_EsteDesapareceDelDirectorioActual
 	"Assert"
 	Assert that: unaTerminal ls isEqualTo: listaDeArchivosYCarpetas.! !
 
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:27:28'!
+test024_cuandoUnUsuarioRootLeaUnArchivoDeText_esteMuestraElTexto
 
-!TerminalTest methodsFor: 'setUp/tearDown' stamp: 'dk 11/14/2021 21:09:11'!
+	| unaTerminal unaArchivoNuevo |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaArchivoNuevo _ archivoDeTexto .
+	
+	"Exercise"
+	unaTerminal touch: unaArchivoNuevo .
+	
+
+	"Assert"
+	Assert that: (unaTerminal cat: unaArchivoNuevo)  isEqualTo: ''.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:30:03'!
+test025_cuandoUnUsuarioRootLeaUnArchivoDeText_esteNoExisteEnElDirectorioActual
+
+	| unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+
+	"Assert"
+	Assert
+        should: [unaTerminal cat: archivoDeTexto]
+        signal: Error
+        withDescription: 'El archivo que intenta leer no existe' .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:39:29'!
+test026_cuandoUnUsuarioRootModifiqueUnArchivoDeTexto_esteReemplazaElTextoExistente
+
+	| unaTerminal unaArchivoNuevo |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaArchivoNuevo _ archivoDeTexto .
+	
+	"Exercise"
+	unaTerminal touch: unaArchivoNuevo .
+	unaTerminal nano: unaArchivoNuevo edicion: 'Texto Modificado'.
+	
+
+	"Assert"
+	Assert that: (unaTerminal cat: unaArchivoNuevo)  isEqualTo: 'Texto Modificado'.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:40:21'!
+test027_cuandoUnUsuarioRootModifiqueUnArchivoDeTexto_esteNoExiste
+
+	| unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Assert"
+	Assert
+        should: [unaTerminal nano: archivoDeTexto edicion: 'Texto Modificado']
+        signal: Error
+        withDescription: 'El archivo que intenta modificar no existe' .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:52:43'!
+test028_cuandoUnUsuarioFiltreUnArchivoPorTextoDado_esteMuestra1ArchivosEncontrado
+
+	| unaTerminal unArchivoConElTextoABuscar unArchivoSinTexto listaDeArchivosEncontrados |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unArchivoConElTextoABuscar _ archivoDeTexto .
+	unArchivoSinTexto _ File conNombre: 'Archivo2.txt'.
+	listaDeArchivosEncontrados _ Set new .
+	listaDeArchivosEncontrados add: unArchivoConElTextoABuscar .
+	
+	"Exercise"
+	unaTerminal touch: unArchivoConElTextoABuscar .
+	unaTerminal touch: unArchivoSinTexto .
+	unaTerminal nano: unArchivoConElTextoABuscar edicion: 'Texto Modificado'.
+	
+	"Assert"
+	Assert that: (unaTerminal filtrarArchivosQueContengan: 'Texto Modificado') isEqualTo: listaDeArchivosEncontrados .
+	! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 01:08:16'!
+test029_cuandoUnUsuarioFiltreUnArchivoPorTextoDado_esteNoEncuentraResultados
+
+	| unaTerminal unArchivoConElTextoABuscar unArchivoSinTexto listaDeArchivosEncontrados |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unArchivoConElTextoABuscar _ archivoDeTexto .
+	unArchivoSinTexto _ File conNombre: 'Archivo2.txt'.
+	listaDeArchivosEncontrados _ Set new .
+	
+	"Exercise"
+	unaTerminal touch: unArchivoConElTextoABuscar .
+	unaTerminal touch: unArchivoSinTexto .
+	unaTerminal nano: unArchivoConElTextoABuscar edicion: 'Texto Modificado'.
+	
+	"Assert"
+	Assert that: (unaTerminal filtrarArchivosQueContengan: 'Tomas') isEqualTo: listaDeArchivosEncontrados .! !
+
+
+!TerminalTest methodsFor: 'setUp/tearDown' stamp: 'dk 11/17/2021 00:03:51'!
 setUp
 
 	unUserRootDefault _ RootUser conNombre: 'root' yContraseña: 'root' .
 	unUserRootDiego1234 _ RootUser conNombre: 'Diego' yContraseña: '1234' .
-	unUserRootDiego4321 _ RootUser conNombre: 'Diego' yContraseña: '4321' .! !
+	unUserRootDiego4321 _ RootUser conNombre: 'Diego' yContraseña: '4321' .
+	
+	unUserPublicDiego4321 _ PublicUser conNombre: 'Diego' yContraseña: '4321' .
+	
+	carpetaTomas _ Folder	 conNombre: 'Tomas' .
+	
+	carpetaDiego _ Folder	 conNombre: 'Diego' .
+	
+	archivoDeTexto _ File conNombre: 'Archivo1.txt' .! !
 
 
 !classDefinition: #File category: 'Grupo1-TP-Final'!
 Object subclass: #File
-	instanceVariableNames: 'nombre fechaDeCreacion fechaDeModificacion'
+	instanceVariableNames: 'nombre fechaDeCreacion fechaDeModificacion texto'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!File methodsFor: 'initialization' stamp: 'TC 11/15/2021 23:47:12'!
+!File methodsFor: 'initialization' stamp: 'dk 11/17/2021 00:28:35'!
 initialize
 
 	fechaDeCreacion _ FixedGregorianDate today.
-	fechaDeModificacion _ FixedGregorianDate today.! !
+	fechaDeModificacion _ FixedGregorianDate today.
+	
+	texto _ '' .! !
 
 !File methodsFor: 'initialization' stamp: 'TC 11/15/2021 23:41:17'!
 initializeConNombre: unNombre 
@@ -439,10 +553,24 @@ fechaDeModificacion
 nombre
 	^nombre! !
 
+!File methodsFor: 'accessing' stamp: 'dk 11/17/2021 00:28:15'!
+texto
+	^ texto! !
+
+
+!File methodsFor: 'testing' stamp: 'dk 11/17/2021 00:52:07'!
+contieneElTexto: unTexto 
+
+	^ texto = unTexto ! !
 
 !File methodsFor: 'testing' stamp: 'TC 11/16/2021 00:11:19'!
 nombreEsIgual: nombreArchivo
 	^ (nombre = nombreArchivo) ! !
+
+
+!File methodsFor: 'public actions' stamp: 'dk 11/17/2021 00:39:11'!
+modificarTexto: unTexto 
+	texto _ unTexto .! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -484,8 +612,9 @@ fechaDeCreacion
 fechaDeModificacion
 	^fechaDeModificacion! !
 
-!Folder methodsFor: 'accessing' stamp: 'TC 11/15/2021 23:59:18'!
+!Folder methodsFor: 'accessing' stamp: 'dk 11/17/2021 17:53:55'!
 listaDeArchivos
+
 	^listaDeArchivos! !
 
 !Folder methodsFor: 'accessing' stamp: 'dk 11/15/2021 23:17:47'!
@@ -532,7 +661,7 @@ Object subclass: #Terminal
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!Terminal methodsFor: 'initialization' stamp: 'dk 11/15/2021 22:55:18'!
+!Terminal methodsFor: 'initialization' stamp: 'dk 11/16/2021 23:27:29'!
 initialize
 
 	| defaultUserRoot |
@@ -584,7 +713,7 @@ tieneCarpetasEnElDirectorioActual
 tieneElArchivoEnElDirectorioActual: unArchivo
 	^ (carpetaActual listaDeArchivos) includes: unArchivo.! !
 
-!Terminal methodsFor: 'testing' stamp: 'dk 11/14/2021 20:30:48'!
+!Terminal methodsFor: 'testing' stamp: 'dk 11/16/2021 23:52:10'!
 tieneUnUsuarioLogueado
 
 	^ usuarioLogueado notNil ! !
@@ -616,7 +745,7 @@ borrarUsuario: unUser
 	listaDeUsuarios remove: unUser 
 		ifAbsent: [self errorUsuarioNoExistente]! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/15/2021 23:15:32'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/16/2021 23:40:27'!
 cd
 	
 	(self esDirectoRaiz ) 
@@ -653,7 +782,7 @@ ingresarUsuario: unUserAIngresar
 		ifTrue: [self errorContraseñaOUsuarioIncorrecto] 
 		ifFalse: [listaDeUsuarios add: unUserAIngresar].! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/14/2021 23:41:06'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/16/2021 23:33:30'!
 iniciarSesion: unUserALoguease 
 	
 	(self unUsuarioTieneElMismoNombreYContraseñaQue: unUserALoguease) 
@@ -681,6 +810,16 @@ modificarUsuario: unUserAModificar por: unUserConModificaciones
 			self errorUsuarioNoExistente
 		].! !
 
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/17/2021 00:41:31'!
+nano: unArchivo edicion: unTexto
+	
+	| listaDeArchivos |
+	listaDeArchivos _ carpetaActual listaDeArchivos .
+	
+	(listaDeArchivos detect: [:unArchivoEnLaLista | (unArchivoEnLaLista nombreEsIgual: unArchivo nombre)] 
+		ifNone: [ self error: 'El archivo que intenta modificar no existe']) 
+		modificarTexto: unTexto! !
+
 !Terminal methodsFor: 'public actions' stamp: 'TC 11/16/2021 00:42:25'!
 rm: unArchivoABorrar
 	|archivoABorrar listaDeArchivos|
@@ -707,6 +846,15 @@ carpetaActual
 	
 	^ carpetaActual! !
 
+!Terminal methodsFor: 'accessing' stamp: 'dk 11/17/2021 00:34:08'!
+cat: unArchivo 
+
+	| listaDeArchivos |
+	listaDeArchivos _ carpetaActual listaDeArchivos .
+	
+	^ (listaDeArchivos detect: [:unArchivoEnLaLista | (unArchivoEnLaLista nombreEsIgual: unArchivo nombre)] 
+		ifNone: [ self error: 'El archivo que intenta leer no existe']) texto! !
+
 !Terminal methodsFor: 'accessing' stamp: 'dk 11/15/2021 23:06:59'!
 errorContraseñaOUsuarioIncorrecto
 
@@ -721,6 +869,15 @@ errorLaCarpetaYaExiste
 errorUsuarioNoExistente
 
 	^ self error: 'El usuario no existe'! !
+
+!Terminal methodsFor: 'accessing' stamp: 'dk 11/17/2021 00:51:47'!
+filtrarArchivosQueContengan: unTexto 
+	
+	| listaDeArchivos |
+	listaDeArchivos _ carpetaActual listaDeArchivos .
+	
+	^ listaDeArchivos select: [:archivoEnLaLista | archivoEnLaLista contieneElTexto: unTexto]
+	! !
 
 !Terminal methodsFor: 'accessing' stamp: 'TC 11/16/2021 00:21:31'!
 ls
@@ -764,7 +921,7 @@ contraseñaEsIgual: unaContraseña
 
 	^ contraseña = unaContraseña ! !
 
-!User methodsFor: 'testing' stamp: 'dk 11/14/2021 20:37:43'!
+!User methodsFor: 'testing' stamp: 'dk 11/16/2021 23:29:10'!
 esIgualElUserYContraseñaA: unUser 
 
 	^ (self nombreEsIgual: unUser nombre) & (self contraseñaEsIgual: unUser contraseña)! !
