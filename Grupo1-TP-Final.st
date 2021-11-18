@@ -466,43 +466,94 @@ test027_cuandoUnUsuarioRootModifiqueUnArchivoDeTexto_esteNoExiste
         signal: Error
         withDescription: 'El archivo que intenta modificar no existe' .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:52:43'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/18/2021 00:52:26'!
 test028_cuandoUnUsuarioFiltreUnArchivoPorTextoDado_esteMuestra1ArchivosEncontrado
 
-	| unaTerminal unArchivoConElTextoABuscar unArchivoSinTexto listaDeArchivosEncontrados |
+	| unaTerminal unArchivoConElTextoABuscar unArchivoSinTexto listaDeArchivosEncontrados filtros filtrarPorTexto |
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
 	unArchivoConElTextoABuscar _ archivoDeTexto .
 	unArchivoSinTexto _ File conNombre: 'Archivo2.txt'.
 	listaDeArchivosEncontrados _ Set new .
 	listaDeArchivosEncontrados add: unArchivoConElTextoABuscar .
+	filtrarPorTexto _ FilterText conElTexto: 'Texto Modificado'.
+	filtros _ Filter filtrarPor: {filtrarPorTexto    }.
 	
 	"Exercise"
 	unaTerminal touch: unArchivoConElTextoABuscar .
 	unaTerminal touch: unArchivoSinTexto .
 	unaTerminal nano: unArchivoConElTextoABuscar edicion: 'Texto Modificado'.
 	
+	
 	"Assert"
-	Assert that: (unaTerminal filtrarArchivosQueContengan: 'Texto Modificado') isEqualTo: listaDeArchivosEncontrados .
+	Assert that: (unaTerminal filtrarCon: filtros) isEqualTo: listaDeArchivosEncontrados .
 	! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 01:08:16'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/18/2021 01:52:38'!
 test029_cuandoUnUsuarioFiltreUnArchivoPorTextoDado_esteNoEncuentraResultados
 
-	| unaTerminal unArchivoConElTextoABuscar unArchivoSinTexto listaDeArchivosEncontrados |
+	| unaTerminal unArchivoConElTextoABuscar unArchivoSinTexto listaDeArchivosEncontrados filtrarPorTexto filtros|
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
 	unArchivoConElTextoABuscar _ archivoDeTexto .
 	unArchivoSinTexto _ File conNombre: 'Archivo2.txt'.
 	listaDeArchivosEncontrados _ Set new .
+	filtrarPorTexto _ FilterText conElTexto: 'Texto Modificado'.
+	filtros _ Filter filtrarPor: {filtrarPorTexto    }.
 	
 	"Exercise"
 	unaTerminal touch: unArchivoConElTextoABuscar .
 	unaTerminal touch: unArchivoSinTexto .
-	unaTerminal nano: unArchivoConElTextoABuscar edicion: 'Texto Modificado'.
+	unaTerminal nano: unArchivoConElTextoABuscar edicion: 'Texto'.
 	
 	"Assert"
-	Assert that: (unaTerminal filtrarArchivosQueContengan: 'Tomas') isEqualTo: listaDeArchivosEncontrados .! !
+	Assert that: (unaTerminal filtrarCon: filtros) isEqualTo: listaDeArchivosEncontrados .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/18/2021 01:49:30'!
+test030_cuandoUnUsuarioFiltreUnArchivoPorUnaFechaDeCreacionDada_estaDevuelveUnaColeccionDeArchivos
+
+	| unaTerminal fechaDeCreacion unArchivoSinTexto listaDeArchivosEncontrados filtrarPorDate filtros|
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	fechaDeCreacion _ FixedGregorianDate today.
+	unArchivoSinTexto _ File conNombre: 'Archivo2.txt'.
+	listaDeArchivosEncontrados _ Set new .
+	listaDeArchivosEncontrados add: unArchivoSinTexto.
+	filtrarPorDate _ FilterCreationFile conLaFecha: fechaDeCreacion.
+	filtros _ Filter filtrarPor: {filtrarPorDate    }.
+	
+	"Exercise"
+	unaTerminal touch: unArchivoSinTexto .
+	
+	"Assert"
+	Assert that: (unaTerminal filtrarCon: filtros) isEqualTo: listaDeArchivosEncontrados.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/18/2021 02:00:11'!
+test031_cuandoUnUsuarioCombinaFiltros_estaDevuelveUnaColeccionDeResultadosDeArchivos
+
+	| unaTerminal fechaDeCreacion unArchivoSinTexto unArchivoConElTextoABuscar listaDeArchivosEncontrados filtrarPorDate filtros filtrarPorTexto otroArchivoConElTextoABuscar|
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	fechaDeCreacion _ FixedGregorianDate today.
+	unArchivoConElTextoABuscar _ archivoDeTexto .
+	unArchivoSinTexto _ File conNombre: 'Archivo2.txt'.
+	otroArchivoConElTextoABuscar _ File conNombre: 'Archivo3.txt'.
+	listaDeArchivosEncontrados _ Set new .
+	listaDeArchivosEncontrados add: unArchivoConElTextoABuscar.
+	listaDeArchivosEncontrados add: otroArchivoConElTextoABuscar.
+	filtrarPorDate _ FilterCreationFile conLaFecha: fechaDeCreacion.
+	filtrarPorTexto _ FilterText conElTexto: 'Texto Modificado'.
+	filtros _ Filter filtrarPor: {filtrarPorDate . filtrarPorTexto }.
+	
+	"Exercise"
+	unaTerminal touch: unArchivoConElTextoABuscar. 
+	unaTerminal touch: unArchivoSinTexto.
+	unaTerminal touch: otroArchivoConElTextoABuscar.
+	unaTerminal nano:  unArchivoConElTextoABuscar edicion: 'Texto Modificado' .
+	unaTerminal nano:  otroArchivoConElTextoABuscar edicion: 'Texto Modificado' .
+	
+	"Assert"
+	Assert that: (unaTerminal filtrarCon: filtros) isEqualTo: listaDeArchivosEncontrados.! !
 
 
 !TerminalTest methodsFor: 'setUp/tearDown' stamp: 'dk 11/17/2021 00:03:51'!
@@ -582,6 +633,101 @@ File class
 conNombre: unNombre
 	
 	^self new initializeConNombre: unNombre. ! !
+
+
+!classDefinition: #Filter category: 'Grupo1-TP-Final'!
+Object subclass: #Filter
+	instanceVariableNames: 'listaDeFiltros'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!Filter methodsFor: 'initialization' stamp: 'TC 11/18/2021 00:53:03'!
+initializeFiltrarPor: unaListaDeFiltros 
+	listaDeFiltros _ unaListaDeFiltros.! !
+
+
+!Filter methodsFor: 'public actions' stamp: 'TC 11/18/2021 01:29:51'!
+filtrarArchivosEnElDirectorio: unaColeccionDeArchivos
+
+	^ unaColeccionDeArchivos select: [: unArchivo| listaDeFiltros allSatisfy:[: unFiltro| unFiltro puedeFiltrar: unArchivo] ].! !
+
+
+!Filter methodsFor: 'testing subClass responsability' stamp: 'TC 11/18/2021 02:02:52'!
+puedeFiltrar: unArchivo
+	^ self subclassResponsibility.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Filter class' category: 'Grupo1-TP-Final'!
+Filter class
+	instanceVariableNames: ''!
+
+!Filter class methodsFor: 'instance creation' stamp: 'TC 11/18/2021 00:53:26'!
+filtrarPor: unaListaDeFiltros.
+	
+	^self new initializeFiltrarPor: unaListaDeFiltros. ! !
+
+
+!classDefinition: #FilterCreationFile category: 'Grupo1-TP-Final'!
+Filter subclass: #FilterCreationFile
+	instanceVariableNames: 'fechaDeCreacion'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!FilterCreationFile methodsFor: 'initialization' stamp: 'TC 11/18/2021 01:44:16'!
+initializeConLaFecha: unaFechaDeCreacion 
+	fechaDeCreacion := unaFechaDeCreacion.! !
+
+
+!FilterCreationFile methodsFor: 'testing' stamp: 'TC 11/18/2021 01:45:02'!
+puedeFiltrar: unArchivo
+	^ (fechaDeCreacion = unArchivo fechaDeCreacion).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'FilterCreationFile class' category: 'Grupo1-TP-Final'!
+FilterCreationFile class
+	instanceVariableNames: ''!
+
+!FilterCreationFile class methodsFor: 'instance creation' stamp: 'TC 11/18/2021 01:43:19'!
+conLaFecha: unaFechaDeCreacion
+	^self new initializeConLaFecha: unaFechaDeCreacion. ! !
+
+
+!classDefinition: #FilterText category: 'Grupo1-TP-Final'!
+Filter subclass: #FilterText
+	instanceVariableNames: 'texto'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!FilterText methodsFor: 'initialization' stamp: 'TC 11/18/2021 00:46:42'!
+initializeConElTexto: unTexto 
+
+	texto _ unTexto.! !
+
+
+!FilterText methodsFor: 'accesing' stamp: 'TC 11/18/2021 01:04:22'!
+filtrar: unaListaDeArchivos
+	
+	^ unaListaDeArchivos select: [:archivoEnLaLista | archivoEnLaLista contieneElTexto: texto].! !
+
+
+!FilterText methodsFor: 'testing' stamp: 'TC 11/18/2021 01:30:58'!
+puedeFiltrar: unArchivo 
+	^ (unArchivo texto  = texto).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'FilterText class' category: 'Grupo1-TP-Final'!
+FilterText class
+	instanceVariableNames: ''!
+
+!FilterText class methodsFor: 'instance creation' stamp: 'TC 11/18/2021 00:45:39'!
+conElTexto: unTexto 
+	^self new initializeConElTexto: unTexto ! !
 
 
 !classDefinition: #Folder category: 'Grupo1-TP-Final'!
@@ -774,6 +920,10 @@ cd: unaCarpeta
 errorArchivoExistente
 
 	^ self error: 'No se puede crear un archivo con el mismo nombre'! !
+
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/18/2021 01:56:40'!
+filtrarCon: coleccionDeFiltros
+	^ (coleccionDeFiltros filtrarArchivosEnElDirectorio: carpetaActual listaDeArchivos). ! !
 
 !Terminal methodsFor: 'public actions' stamp: 'dk 11/15/2021 23:08:43'!
 ingresarUsuario: unUserAIngresar
