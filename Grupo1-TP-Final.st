@@ -831,6 +831,39 @@ test048_cuandoUnUsuarioCreaUnaArchivoDeTexto_esteNoTienePermisosDeEscrituraSobre
         signal: Error
         withDescription: 'El usuario no tiene permisos de escritura'.! !
 
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/20/2021 00:45:11'!
+test049_cuandoUnUsuarioRootLeAgregaUnPermisoAUnUsuario_estePermisoParaEscribirElArchivo
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321 en: archivoDeTexto.
+	
+	"Assert"
+	Assert that: (unaTerminal cat: archivoDeTexto) isEqualTo: ''! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/20/2021 00:47:09'!
+test050_cuandoUnUsuarioRootLeAgregaUnPermisoAUnUsuario_esteYaTienePermisoParaEscribirElArchivo
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321 en: archivoDeTexto.
+	
+	"Assert"
+	"Assert
+        should: [unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321 en: archivoDeTexto.]
+        signal: Error
+        withDescription: 'El usuario es owner/root o ya tiene permisos de escritura sobre este archivo/carpeta'."! !
+
 
 !TerminalTest methodsFor: 'setUp/tearDown' stamp: 'dk 11/19/2021 00:20:18'!
 setUp
@@ -920,6 +953,10 @@ tienePermisosDeEjecucionDelUsuario: unUsuario
 tienePermisosDeEscrituraDelUsuario: unUsuario 
 	^ (permisosDeEscritura puedeEscribir: unUsuario)! !
 
+
+!File methodsFor: 'public actions' stamp: 'TC 11/20/2021 00:00:18'!
+agregarPermisosParaEscribir: unUsuario 
+	permisosDeEscritura agregar: unUsuario.! !
 
 !File methodsFor: 'public actions' stamp: 'TC 11/19/2021 00:52:21'!
 creadoPor: unUsuario
@@ -1192,6 +1229,11 @@ initialize
 
 	listaDeUsuariosQuePuedenEscribir _ Set new ! !
 
+
+!PermisoDeEscritura methodsFor: 'public actions' stamp: 'TC 11/20/2021 00:01:08'!
+agregar: unUsuario
+	listaDeUsuariosQuePuedenEscribir add: unUsuario.! !
+
 
 !classDefinition: #PermisoDeLectura category: 'Grupo1-TP-Final'!
 Object subclass: #PermisoDeLectura
@@ -1295,6 +1337,23 @@ unaCarpetaNombreEsIgual: unaCarpeta a: unaCarpetaEnLaLista
 agregarCarpeta: unaCarpeta
 
 	^ carpetaActual agregarCarpeta: unaCarpeta! !
+
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/20/2021 00:46:30'!
+agregarPermisosDeEscritura: unUsuario en: unArchivoOCarpeta
+	
+	|listaDeArchivosEnElDirectorioActual unArchivoEncontrado|
+	
+	listaDeArchivosEnElDirectorioActual _ carpetaActual listaDeArchivos.
+	
+	unArchivoEncontrado _ listaDeArchivosEnElDirectorioActual detect: [:unArchivoEnLaLista| unArchivoEnLaLista nombreEsIgual: unArchivoOCarpeta nombre]
+		ifNone:[self errorArchivoExistente].  
+		
+	" (((unArchivoEncontrado tienePermisosDeEscrituraDelUsuario: unUsuario) not) 
+	| (unArchivoEncontrado creadoPorUsuario nombreEsIgual: (unUsuario nombre)) 
+	| (unUsuario isMemberOf: RootUser))
+	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de escritura sobre este archivo/carpeta']. "  
+	
+	unArchivoOCarpeta agregarPermisosParaEscribir: unUsuario.! !
 
 !Terminal methodsFor: 'public actions' stamp: 'dk 11/14/2021 23:55:27'!
 borrarUsuario: unUser 
