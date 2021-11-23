@@ -1017,6 +1017,21 @@ test059_cuandoUnUsuarioRootLeAgregaUnPermisoDeLecturaAUnUsuario_esteTeniaPermiso
         signal: Error
         withDescription: 'El usuario es owner/root o ya tiene permisos de lectura sobre este archivo/carpeta'.! !
 
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/23/2021 02:00:18'!
+test060_cuandoUnUsuarioRootLogueadoFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeEscrituraPorqueEsRoot
+
+	| unaTerminal listaDeArchivosEncontrados unFiltro unFiltroDePermiso |
+	"Setup"
+	unaTerminal _ self unaTerminalRootConArchivos .
+	listaDeArchivosEncontrados _ Set new .
+	listaDeArchivosEncontrados add: archivoDeTexto.
+	listaDeArchivosEncontrados add: archivoDeTexto2. 
+	unFiltroDePermiso _ FilterPermissonEscritura conElUsuario: (unaTerminal usuarioLogueado). "Esto es por usuario root".
+	unFiltro _ FiltroCompuesto filtrarPor: { unFiltroDePermiso } .
+	
+	"Exercise & Assert"
+	Assert that: (unaTerminal filtrarCon: unFiltro) isEqualTo: listaDeArchivosEncontrados .! !
+
 
 !TerminalTest methodsFor: 'setUp/tearDown' stamp: 'dk 11/19/2021 00:20:18'!
 setUp
@@ -1190,7 +1205,6 @@ initializeConElTexto: unTexto
 	texto _ unTexto.! !
 
 
-
 !FilterText methodsFor: 'testing' stamp: 'TC 11/18/2021 01:30:58'!
 puedeFiltrar: unArchivo 
 	^ (unArchivo texto  = texto).! !
@@ -1259,6 +1273,41 @@ FiltroCompuesto class
 filtrarPor: unaListaDeFiltros.
 	
 	^self new initializeFiltrarPor: unaListaDeFiltros. ! !
+
+
+!classDefinition: #FilterPermisson category: 'Grupo1-TP-Final'!
+Object subclass: #FilterPermisson
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+
+!classDefinition: #FilterPermissonEscritura category: 'Grupo1-TP-Final'!
+Object subclass: #FilterPermissonEscritura
+	instanceVariableNames: 'usuario'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!FilterPermissonEscritura methodsFor: 'initialization' stamp: 'TC 11/23/2021 01:48:30'!
+initializeConElUsuario: unUsuario 
+	usuario := unUsuario.! !
+
+
+!FilterPermissonEscritura methodsFor: 'testing' stamp: 'TC 11/23/2021 01:54:27'!
+puedeFiltrar: unArchivo 
+	 ^ (unArchivo tienePermisosDeEscrituraDelUsuario: usuario) | (usuario isMemberOf: RootUser) | (unArchivo creadoPorUsuario nombre = usuario nombre).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'FilterPermissonEscritura class' category: 'Grupo1-TP-Final'!
+FilterPermissonEscritura class
+	instanceVariableNames: ''!
+
+!FilterPermissonEscritura class methodsFor: 'instance creation' stamp: 'TC 11/23/2021 01:47:57'!
+conElUsuario: unUsuario 
+	^self new initializeConElUsuario: unUsuario.! !
 
 
 !classDefinition: #Folder category: 'Grupo1-TP-Final'!
@@ -1833,6 +1882,11 @@ obtenerCarpetaDelDirectorioActual: unaCarpeta
 	^ listaDeCarpetasEnElDirectorioActual detect: [:unaCarpetaEnLaLista | self unaCarpetaNombreEsIgual: unaCarpeta a: unaCarpetaEnLaLista] 
 		ifNone: [self error: 'La carpeta no existe en este directorio'.] .! !
 
+!Terminal methodsFor: 'accessing' stamp: 'TC 11/23/2021 01:43:52'!
+usuarioLogueado
+	
+	^ usuarioLogueado.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Terminal class' category: 'Grupo1-TP-Final'!
@@ -1897,7 +1951,6 @@ initializeConNombre: unNombre yContraseña: unaContraseña
 
 	nombre := unNombre.
 	contraseña := unaContraseña.! !
-
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
