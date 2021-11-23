@@ -106,15 +106,10 @@ errorNoSePuedeRetrocederDesdeRoot
 
 	^ 'No se puede volver, estas parado en root'! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/18/2021 23:54:54'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/20/2021 18:48:21'!
 errorPorArchivoInexistente
 
-	^ 'El archivo que intenta leer no existe'! !
-
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/18/2021 23:56:27'!
-errorPorArchivoInexistenteAlQuererSerModificado
-
-	^ 'El archivo que intenta modificar no existe'! !
+	^ 'El archivo no existe'! !
 
 !TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:59:36'!
 errorPorCarpetaInexistente
@@ -201,7 +196,7 @@ test006_cuandoUnaTerminalSeCrea_unUsuarioRoot_borraUnUsuario
 	
 	Assert isFalse: (unaTerminal tieneAlUsuario: unUsuarioAAgregar) .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:51:10'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/20/2021 21:00:52'!
 test007_cuandoUnaTerminalSeCrea_unUsuarioRoot_noPuedeAgregarUnUsuarioYaExistente
 
 	"Setup"
@@ -211,7 +206,7 @@ test007_cuandoUnaTerminalSeCrea_unUsuarioRoot_noPuedeAgregarUnUsuarioYaExistente
 	
 	"Exercise"
 	unUserRootDefault registrarUsuario: unUsuarioAAgregar en: unaTerminal .
-	
+
 	Assert
         should: [ unUserRootDefault registrarUsuario: unUsuarioAAgregar en: unaTerminal .  ]
         signal: Error
@@ -231,20 +226,22 @@ test008_cuandoUnaTerminalSeCrea_unUsuarioRoot_trataDeBorraUnUsuarioInexistente
         withDescription: self errorUsuarioNoExistente .
 ! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:52:52'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/20/2021 21:32:02'!
 test009_cuandoUnaTerminalSeCrea_unUsuarioRoot_modificaUnUsuario
 
 	"Setup"
-	| unaTerminal unUsuarioAAgregar unUsuarioModificado |
-	unUsuarioAAgregar _ unUserPublicDiego4321 .
+	| unaTerminal unUsuarioModificado unUsuarioNuevo |
+	unUsuarioNuevo _ unUserPublicDiego4321 .
 	unUsuarioModificado _ PublicUser conNombre: 'Tomas' yContraseña: '9876' .
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado .
 	
 	"Exercise"
-	unUserRootDefault registrarUsuario: unUsuarioAAgregar en: unaTerminal .
-	unUserRootDefault modificarUsuario: unUsuarioAAgregar por: unUsuarioModificado en: unaTerminal .
+	unUserRootDefault registrarUsuario: unUsuarioNuevo en: unaTerminal .
+	unUserRootDefault modificarUsuario: unUsuarioNuevo por: unUsuarioModificado en: unaTerminal .
 	
-	Assert isFalse: (unaTerminal tieneAlUsuario: unUsuarioAAgregar) .
+	Assert isTrue: (unaTerminal tieneAlUsuario: unUsuarioNuevo) .
+	Assert that: unUsuarioNuevo nombre isEqualTo: 'Tomas' .
+	Assert that: unUsuarioNuevo contraseña isEqualTo: '9876' .
 ! !
 
 !TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:53:17'!
@@ -284,7 +281,7 @@ test012_cuandoUnUsuarioEscribeMkDirEnLaTerminal_creaUnaCarpetaEnElDirectorio
 	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz).
 	Assert isTrue: (unaTerminal tieneCarpetasEnElDirectorioActual).! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:58:18'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/20/2021 18:53:13'!
 test013_cuandoUnUsuarioEscribeMkDirEnLaTerminal_noPuedeCrearUnaCarpetaYaExistente
 
 	| unaTerminal unaCarpetaNueva |
@@ -297,7 +294,7 @@ test013_cuandoUnUsuarioEscribeMkDirEnLaTerminal_noPuedeCrearUnaCarpetaYaExistent
 
 	"Assert"
 	Assert isFalse: (unaTerminal estaParadaEnElDirectorioRaiz).
-	Assert that: (unaTerminal carpetaActual) isEqualTo: unaCarpetaNueva .! !
+	Assert that: (unaTerminal directorioActual) isEqualTo: unaCarpetaNueva .! !
 
 !TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/16/2021 23:59:36'!
 test014_cuandoUnUsuarioEscribeCDEnLaTerminal_noPuedeIngresarAUnaCarpetaInexistente
@@ -312,7 +309,7 @@ test014_cuandoUnUsuarioEscribeCDEnLaTerminal_noPuedeIngresarAUnaCarpetaInexisten
         signal: Error
         withDescription: self errorPorCarpetaInexistente .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:00:29'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/20/2021 18:53:13'!
 test015_cuandoUnUsuarioEscribeCDParaVolverEnLaTerminal_esteVuelveUnaCarpetaHaciaAtras
 
 	| unaTerminal unaCarpetaNueva otraCarpetaNueva |
@@ -329,7 +326,7 @@ test015_cuandoUnUsuarioEscribeCDParaVolverEnLaTerminal_esteVuelveUnaCarpetaHacia
 
 	"Assert"
 	Assert isFalse: (unaTerminal estaParadaEnElDirectorioRaiz).
-	Assert that: (unaTerminal carpetaActual) isEqualTo: unaCarpetaNueva .! !
+	Assert that: (unaTerminal directorioActual) isEqualTo: unaCarpetaNueva .! !
 
 !TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/17/2021 00:02:33'!
 test016_cuandoUnUsuarioEscribeCDParaVolverEnLaTerminal_esteNoPuedeRegresarALaCarpetaAnterior_porEstarEnElDirectorioRoot
@@ -463,7 +460,7 @@ test024_cuandoUnUsuarioRootLeaUnArchivoDeText_esteMuestraElTexto
 	"Assert"
 	Assert that: (unaTerminal cat: unaArchivoNuevo)  isEqualTo: ''.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/18/2021 23:54:54'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/20/2021 18:47:57'!
 test025_cuandoUnUsuarioRootLeaUnArchivoDeText_esteNoExisteEnElDirectorioActual
 
 	| unaTerminal |
@@ -492,7 +489,7 @@ test026_cuandoUnUsuarioRootModifiqueUnArchivoDeTexto_esteReemplazaElTextoExisten
 	"Assert"
 	Assert that: (unaTerminal cat: unaArchivoNuevo) isEqualTo: 'Texto Modificado'.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/19/2021 00:22:26'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/20/2021 18:49:03'!
 test027_cuandoUnUsuarioRootModifiqueUnArchivoDeTexto_esteNoExiste
 
 	| unaTerminal |
@@ -503,7 +500,7 @@ test027_cuandoUnUsuarioRootModifiqueUnArchivoDeTexto_esteNoExiste
 	Assert
         should: [unaTerminal nano: archivoDeTexto edicion: 'Texto Modificado']
         signal: Error
-        withDescription: self errorPorArchivoInexistenteAlQuererSerModificado .! !
+        withDescription: self errorPorArchivoInexistente .! !
 
 !TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/19/2021 00:25:24'!
 test028_cuandoUnUsuarioFiltreUnArchivoPorTextoDado_esteMuestra1ArchivosEncontrado
@@ -831,8 +828,8 @@ test048_cuandoUnUsuarioCreaUnaArchivoDeTexto_esteNoTienePermisosDeEscrituraSobre
         signal: Error
         withDescription: 'El usuario no tiene permisos de escritura'.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/20/2021 00:45:11'!
-test049_cuandoUnUsuarioRootLeAgregaUnPermisoAUnUsuario_estePermisoParaEscribirElArchivo
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:54:17'!
+test049_cuandoUnUsuarioRootLeAgregaUnPermisoDeLecturaAUnUsuario_estePuedeLeerElArchivo
 
 	|unaTerminal |
 	"Setup"
@@ -841,13 +838,50 @@ test049_cuandoUnUsuarioRootLeAgregaUnPermisoAUnUsuario_estePermisoParaEscribirEl
 	"Exercise"
 	unaTerminal ingresarUsuario: unUserPublicDiego4321.
 	unaTerminal touch: archivoDeTexto.
-	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321 en: archivoDeTexto.
+	unaTerminal agregarPermisosDeLectura: unUserPublicDiego4321 en: archivoDeTexto.
+	unaTerminal iniciarSesion: unUserPublicDiego4321 .
 	
 	"Assert"
 	Assert that: (unaTerminal cat: archivoDeTexto) isEqualTo: ''! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/20/2021 00:47:09'!
-test050_cuandoUnUsuarioRootLeAgregaUnPermisoAUnUsuario_esteYaTienePermisoParaEscribirElArchivo
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:54:35'!
+test050_cuandoUnUsuarioRootLeAgregaUnPermisoDeLecturaAUnUsuario_esteYaTeniaPermisoParaLeerElArchivo
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal agregarPermisosDeLectura: unUserPublicDiego4321 en: archivoDeTexto.
+	
+	"Assert"
+	Assert
+        should: [unaTerminal agregarPermisosDeLectura: unUserPublicDiego4321 en: archivoDeTexto.]
+        signal: Error
+        withDescription: 'El usuario es owner/root o ya tiene permisos de lectura sobre este archivo/carpeta'.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:54:39'!
+test051_cuandoUnUsuarioRootLeAgregaUnPermisoDeEscrituraAUnUsuario_estePuedeEscribirElArchivo
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal agregarPermisosDeLectura: unUserPublicDiego4321 en: archivoDeTexto.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321 en: archivoDeTexto.
+	unaTerminal iniciarSesion: unUserPublicDiego4321 .
+	unaTerminal nano: archivoDeTexto edicion: 'Texto Modificado' .
+	
+	"Assert"
+	Assert that: (unaTerminal cat: archivoDeTexto) isEqualTo: 'Texto Modificado'! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:54:46'!
+test052_cuandoUnUsuarioRootLeAgregaUnPermisoDeEscrituraAUnUsuario_esteYaTeniaPermisoParaEscribirElArchivo
 
 	|unaTerminal |
 	"Setup"
@@ -859,10 +893,129 @@ test050_cuandoUnUsuarioRootLeAgregaUnPermisoAUnUsuario_esteYaTienePermisoParaEsc
 	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321 en: archivoDeTexto.
 	
 	"Assert"
-	"Assert
+	Assert
         should: [unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321 en: archivoDeTexto.]
         signal: Error
-        withDescription: 'El usuario es owner/root o ya tiene permisos de escritura sobre este archivo/carpeta'."! !
+        withDescription: 'El usuario es owner/root o ya tiene permisos de escritura sobre este archivo/carpeta'.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:54:50'!
+test053_cuandoUnUsuarioRootLeAgregaUnPermisoDeEjecucionAUnUsuario_estePuedeEjecutarElArchivo
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal agregarPermisosDeEjecucion: unUserPublicDiego4321 en: archivoDeTexto.
+	
+	"Assert"
+	Assert that: (unaTerminal ejecutar: archivoDeTexto) isEqualTo: archivoDeTexto .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:54:56'!
+test054_cuandoUnUsuarioRootLeAgregaUnPermisoDeEjecucionAUnUsuario_esteYaTeniaPermisoParaEjecutarElArchivo
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal agregarPermisosDeEjecucion: unUserPublicDiego4321 en: archivoDeTexto.
+	
+	"Assert"
+	Assert
+        should: [unaTerminal agregarPermisosDeEjecucion: unUserPublicDiego4321 en: archivoDeTexto.]
+        signal: Error
+        withDescription: 'El usuario es owner/root o ya tiene permisos de ejecucion sobre este archivo/carpeta'.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/20/2021 21:06:23'!
+test055_cuandoUnUsuarioSeElimineAElMismo_esteNoPuedeBorrarse
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserRootDiego1234.
+	unaTerminal iniciarSesion: unUserRootDiego1234 .
+	
+	"Assert"
+	Assert
+        should: [unaTerminal borrarUsuario: unUserRootDiego1234 .]
+        signal: Error
+        withDescription: 'El usuario no puede borrarse a el mismo'.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:55:10'!
+test056_cuandoUnUsuarioRootLeAgregaUnPermisoDeEscrituraAUnUsuario_estePuedeEscribirEnLaCarpeta
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321. "Estamos parados sobre root"
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321.
+	unaTerminal iniciarSesion: unUserPublicDiego4321 .
+	
+	unaTerminal mkdir: 	carpetaTomas .
+	
+	"Assert"
+	Assert isTrue: unaTerminal esDirectoRaiz.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:55:16'!
+test057_cuandoUnUsuarioRootLeAgregaUnPermisoDeEscrituraAUnUsuario_esteYaTeniaPermisoParaEscribirEnElDirectorio
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321.
+	
+	"Assert"
+	Assert
+        should: [unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321.]
+        signal: Error
+        withDescription: 'El usuario es owner/root o ya tiene permisos de escritura sobre este archivo/carpeta'.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:55:36'!
+test058_cuandoUnUsuarioRootLeAgregaUnPermisoDeLecturaAUnUsuario_estePuedeLeerLaCarpetaDelDirectorio
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal mkdir: 	carpetaTomas .
+	unaTerminal agregarPermisosDeLectura: unUserPublicDiego4321 para: carpetaTomas.
+	unaTerminal iniciarSesion: unUserPublicDiego4321 .
+	unaTerminal cd: carpetaTomas .
+	
+	"Assert"
+	Assert isFalse: unaTerminal esDirectoRaiz.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/23/2021 00:56:37'!
+test059_cuandoUnUsuarioRootLeAgregaUnPermisoDeLecturaAUnUsuario_esteTeniaPermisosDeLecturaParaLaCarpetaDelDirectorio
+
+	|unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	"Exercise"
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal mkdir: 	carpetaTomas .
+	unaTerminal agregarPermisosDeLectura: unUserPublicDiego4321 para: carpetaTomas.
+	
+	"Assert"
+	Assert
+        should: [unaTerminal agregarPermisosDeLectura: unUserPublicDiego4321 para: carpetaTomas.]
+        signal: Error
+        withDescription: 'El usuario es owner/root o ya tiene permisos de lectura sobre este archivo/carpeta'.! !
 
 
 !TerminalTest methodsFor: 'setUp/tearDown' stamp: 'dk 11/19/2021 00:20:18'!
@@ -895,7 +1048,7 @@ Object subclass: #File
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!File methodsFor: 'initialization' stamp: 'dk 11/19/2021 21:20:59'!
+!File methodsFor: 'initialization' stamp: 'dk 11/20/2021 19:14:59'!
 initialize
 
 	fechaDeCreacion _ FixedGregorianDate today.
@@ -919,9 +1072,9 @@ creadoPorUsuario
 fechaDeCreacion
 	^fechaDeCreacion! !
 
-!File methodsFor: 'accessing' stamp: 'TC 11/15/2021 23:52:49'!
+!File methodsFor: 'accessing' stamp: 'dk 11/20/2021 19:14:08'!
 fechaDeModificacion
-	^fechaDeModificacion! !
+	^ fechaDeModificacion! !
 
 !File methodsFor: 'accessing' stamp: 'TC 11/15/2021 23:41:30'!
 nombre
@@ -931,11 +1084,6 @@ nombre
 texto
 	^ texto! !
 
-
-!File methodsFor: 'testing' stamp: 'dk 11/17/2021 00:52:07'!
-contieneElTexto: unTexto 
-
-	^ texto = unTexto ! !
 
 !File methodsFor: 'testing' stamp: 'TC 11/19/2021 00:56:05'!
 fueCreadoPor: unUsuario 
@@ -954,12 +1102,23 @@ tienePermisosDeEscrituraDelUsuario: unUsuario
 	^ (permisosDeEscritura puedeEscribir: unUsuario)! !
 
 
+!File methodsFor: 'public actions' stamp: 'dk 11/20/2021 20:00:07'!
+agregarPermisosParaEjecutar: unUsuario 
+	
+	permisosDeEjecucion agregar: unUsuario.! !
+
 !File methodsFor: 'public actions' stamp: 'TC 11/20/2021 00:00:18'!
 agregarPermisosParaEscribir: unUsuario 
 	permisosDeEscritura agregar: unUsuario.! !
 
-!File methodsFor: 'public actions' stamp: 'TC 11/19/2021 00:52:21'!
+!File methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:41:41'!
+agregarPermisosParaLeer: unUsuario 
+	
+	permisosDeLectura agregar: unUsuario.! !
+
+!File methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:14:35'!
 creadoPor: unUsuario
+
 	creadoPorUsuario _ unUsuario.! !
 
 !File methodsFor: 'public actions' stamp: 'dk 11/17/2021 00:39:11'!
@@ -998,9 +1157,9 @@ Filter subclass: #FilterCreationFile
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!FilterCreationFile methodsFor: 'initialization' stamp: 'TC 11/18/2021 01:44:16'!
+!FilterCreationFile methodsFor: 'initialization' stamp: 'dk 11/20/2021 18:26:27'!
 initializeConLaFecha: unaFechaDeCreacion 
-	fechaDeCreacion := unaFechaDeCreacion.! !
+	fechaDeCreacion _ unaFechaDeCreacion.! !
 
 
 !FilterCreationFile methodsFor: 'testing' stamp: 'TC 11/18/2021 01:45:02'!
@@ -1031,11 +1190,6 @@ initializeConElTexto: unTexto
 	texto _ unTexto.! !
 
 
-!FilterText methodsFor: 'accesing' stamp: 'TC 11/18/2021 01:04:22'!
-filtrar: unaListaDeArchivos
-	
-	^ unaListaDeArchivos select: [:archivoEnLaLista | archivoEnLaLista contieneElTexto: texto].! !
-
 
 !FilterText methodsFor: 'testing' stamp: 'TC 11/18/2021 01:30:58'!
 puedeFiltrar: unArchivo 
@@ -1050,6 +1204,33 @@ FilterText class
 !FilterText class methodsFor: 'instance creation' stamp: 'TC 11/18/2021 00:45:39'!
 conElTexto: unTexto 
 	^self new initializeConElTexto: unTexto ! !
+
+
+!classDefinition: #FilterUser category: 'Grupo1-TP-Final'!
+Filter subclass: #FilterUser
+	instanceVariableNames: 'usuario'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!FilterUser methodsFor: 'initialization' stamp: 'TC 11/19/2021 01:02:29'!
+initializeConElUsuario: unUsuario 
+	usuario := unUsuario.! !
+
+
+!FilterUser methodsFor: 'testing' stamp: 'TC 11/19/2021 01:03:52'!
+puedeFiltrar: unArchivo
+	^ unArchivo creadoPorUsuario nombre = usuario nombre.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'FilterUser class' category: 'Grupo1-TP-Final'!
+FilterUser class
+	instanceVariableNames: ''!
+
+!FilterUser class methodsFor: 'instance creation' stamp: 'TC 11/19/2021 01:01:54'!
+conElUsuario: unUsuario
+	^self new initializeConElUsuario: unUsuario. ! !
 
 
 !classDefinition: #FiltroCompuesto category: 'Grupo1-TP-Final'!
@@ -1080,33 +1261,6 @@ filtrarPor: unaListaDeFiltros.
 	^self new initializeFiltrarPor: unaListaDeFiltros. ! !
 
 
-!classDefinition: #FilterUser category: 'Grupo1-TP-Final'!
-Object subclass: #FilterUser
-	instanceVariableNames: 'usuario'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Grupo1-TP-Final'!
-
-!FilterUser methodsFor: 'initialization' stamp: 'TC 11/19/2021 01:02:29'!
-initializeConElUsuario: unUsuario 
-	usuario := unUsuario.! !
-
-
-!FilterUser methodsFor: 'testing' stamp: 'TC 11/19/2021 01:03:52'!
-puedeFiltrar: unArchivo
-	^ unArchivo creadoPorUsuario nombre = usuario nombre.! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'FilterUser class' category: 'Grupo1-TP-Final'!
-FilterUser class
-	instanceVariableNames: ''!
-
-!FilterUser class methodsFor: 'instance creation' stamp: 'TC 11/19/2021 01:01:54'!
-conElUsuario: unUsuario
-	^self new initializeConElUsuario: unUsuario. ! !
-
-
 !classDefinition: #Folder category: 'Grupo1-TP-Final'!
 Object subclass: #Folder
 	instanceVariableNames: 'nombreCarpeta listaDeCarpetas listaDeArchivos fechaDeCreacion fechaDeModificacion permisosDeLectura permisosDeEscritura permisosDeEjecucion creadoPorUsuario'
@@ -1118,7 +1272,7 @@ Object subclass: #Folder
 inicializarConNombre: unNombre
 	nombreCarpeta _ unNombre.! !
 
-!Folder methodsFor: 'initialization' stamp: 'dk 11/19/2021 23:20:00'!
+!Folder methodsFor: 'initialization' stamp: 'dk 11/20/2021 21:34:02'!
 initialize
 
 	listaDeCarpetas _ Set new.
@@ -1127,8 +1281,7 @@ initialize
 	fechaDeModificacion _ FixedGregorianDate today.
 	
 	permisosDeLectura _ PermisoDeLectura new.
-	permisosDeEscritura _ PermisoDeEscritura new.
-	permisosDeEjecucion _ PermisoDeEjecucion new.! !
+	permisosDeEscritura _ PermisoDeEscritura new.! !
 
 
 !Folder methodsFor: 'accessing' stamp: 'dk 11/19/2021 23:22:29'!
@@ -1173,10 +1326,26 @@ tieneCarpetas
 tienePermisosDeEscrituraDelUsuario: unUsuario 
 	^ (permisosDeEscritura puedeEscribir: unUsuario)! !
 
+!Folder methodsFor: 'testing' stamp: 'dk 11/23/2021 00:46:41'!
+tienePermisosDeLecturaDelUsuario: unUsuario 
+	
+	^ (permisosDeLectura puedeLeer: unUsuario)! !
 
-!Folder methodsFor: 'public actions' stamp: 'TC 11/14/2021 22:21:13'!
+
+!Folder methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:20:05'!
 agregarCarpeta: unaCarpeta 
+
 	listaDeCarpetas add: unaCarpeta.! !
+
+!Folder methodsFor: 'public actions' stamp: 'dk 11/20/2021 21:41:37'!
+agregarPermisosParaEscribir: unUsuario 
+	
+	permisosDeEscritura agregar: unUsuario.! !
+
+!Folder methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:53:31'!
+agregarPermisosParaLeer: unUsuario 
+	
+	permisosDeLectura agregar: unUsuario.! !
 
 !Folder methodsFor: 'public actions' stamp: 'dk 11/19/2021 23:24:33'!
 creadoPor: unUsuario
@@ -1194,16 +1363,24 @@ conNombre: unNombre
 	^self new inicializarConNombre: unNombre.! !
 
 
+!classDefinition: #Permiso category: 'Grupo1-TP-Final'!
+Object subclass: #Permiso
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+
 !classDefinition: #PermisoDeEjecucion category: 'Grupo1-TP-Final'!
-Object subclass: #PermisoDeEjecucion
+Permiso subclass: #PermisoDeEjecucion
 	instanceVariableNames: 'listaDeUsuariosQuePuedenEjecutar'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!PermisoDeEjecucion methodsFor: 'testing' stamp: 'dk 11/19/2021 23:03:23'!
+!PermisoDeEjecucion methodsFor: 'testing' stamp: 'dk 11/20/2021 20:02:37'!
 puedeEjecutar: unUsuario 
-	^ listaDeUsuariosQuePuedenEjecutar anySatisfy: [:unUsuarioEnLaLista | unUsuario nombreEsIgual: unUsuarioEnLaLista]! !
+	^ listaDeUsuariosQuePuedenEjecutar anySatisfy: [:unUsuarioEnLaLista | unUsuario nombreEsIgual: unUsuarioEnLaLista nombre]! !
 
 
 !PermisoDeEjecucion methodsFor: 'initialization' stamp: 'dk 11/19/2021 23:03:44'!
@@ -1211,17 +1388,23 @@ initialize
 
 	listaDeUsuariosQuePuedenEjecutar _ Set new .! !
 
+
+!PermisoDeEjecucion methodsFor: 'public actions' stamp: 'dk 11/20/2021 20:00:27'!
+agregar: unUsuario 
+	
+	listaDeUsuariosQuePuedenEjecutar add: unUsuario ! !
+
 
 !classDefinition: #PermisoDeEscritura category: 'Grupo1-TP-Final'!
-Object subclass: #PermisoDeEscritura
+Permiso subclass: #PermisoDeEscritura
 	instanceVariableNames: 'listaDeUsuariosQuePuedenEscribir'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!PermisoDeEscritura methodsFor: 'testing' stamp: 'dk 11/19/2021 22:50:35'!
+!PermisoDeEscritura methodsFor: 'testing' stamp: 'dk 11/20/2021 19:29:28'!
 puedeEscribir: unUsuario 
-	^ listaDeUsuariosQuePuedenEscribir anySatisfy: [:unUsuarioEnLaLista | unUsuario nombreEsIgual: unUsuarioEnLaLista]! !
+	^ (listaDeUsuariosQuePuedenEscribir anySatisfy: [:unUsuarioEnLaLista | unUsuario nombreEsIgual: unUsuarioEnLaLista nombre])! !
 
 
 !PermisoDeEscritura methodsFor: 'initialization' stamp: 'dk 11/19/2021 22:50:59'!
@@ -1236,7 +1419,7 @@ agregar: unUsuario
 
 
 !classDefinition: #PermisoDeLectura category: 'Grupo1-TP-Final'!
-Object subclass: #PermisoDeLectura
+Permiso subclass: #PermisoDeLectura
 	instanceVariableNames: 'listaDeUsuariosQuePuedenLeer'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -1247,30 +1430,36 @@ initialize
 
 	listaDeUsuariosQuePuedenLeer _ Set new .! !
 
-!PermisoDeLectura methodsFor: 'testing' stamp: 'dk 11/19/2021 21:23:22'!
+!PermisoDeLectura methodsFor: 'testing' stamp: 'dk 11/20/2021 19:44:52'!
 puedeLeer: unUser 
-	^ listaDeUsuariosQuePuedenLeer anySatisfy: [:unUsuarioEnLaLista | unUser nombreEsIgual: unUsuarioEnLaLista]! !
+	^ listaDeUsuariosQuePuedenLeer anySatisfy: [:unUsuarioEnLaLista | unUser nombreEsIgual: unUsuarioEnLaLista nombre]! !
+
+
+!PermisoDeLectura methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:42:18'!
+agregar: unUsuario 
+	
+	listaDeUsuariosQuePuedenLeer add: unUsuario ! !
 
 
 !classDefinition: #Terminal category: 'Grupo1-TP-Final'!
 Object subclass: #Terminal
-	instanceVariableNames: 'listaDeUsuarios usuarioLogueado carpetaActual carpetaAnterior listaDeDirectoriosVistos'
+	instanceVariableNames: 'listaDeUsuarios usuarioLogueado directorioActual carpetaAnterior listaDeDirectoriosVistos'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Grupo1-TP-Final'!
 
-!Terminal methodsFor: 'initialization' stamp: 'dk 11/19/2021 23:26:40'!
+!Terminal methodsFor: 'initialization' stamp: 'dk 11/20/2021 18:52:51'!
 initialize
 
 	| defaultUserRoot |
 	defaultUserRoot _ RootUser conNombre: 'root' yContraseña: 'root'.
 	listaDeUsuarios _ Set new .
 	listaDeUsuarios add: defaultUserRoot .	
-	carpetaActual _ Folder conNombre: 'root' .
-	carpetaActual creadoPor: defaultUserRoot .
+	directorioActual _ Folder conNombre: 'root' .
+	directorioActual creadoPor: defaultUserRoot .
 	
 	listaDeDirectoriosVistos _ OrderedCollection new .
-	listaDeDirectoriosVistos add: carpetaActual .! !
+	listaDeDirectoriosVistos add: directorioActual .! !
 
 !Terminal methodsFor: 'initialization' stamp: 'dk 11/14/2021 20:26:56'!
 initializeIniciarSesion: unUser 
@@ -1279,6 +1468,37 @@ initializeIniciarSesion: unUser
 	
 	! !
 
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 19:13:44'!
+elArchivo: unArchivo existeEnElDirectorioActual: unaListaDeArchivos
+
+	(unaListaDeArchivos anySatisfy: [:unArchivoEnLaLista| unArchivoEnLaLista nombreEsIgual: unArchivo nombre]) 
+		ifTrue:[self errorArchivoExistente]! !
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 18:58:51'!
+elDirectorioActualFueCreadoPorElUsuarioLogueado
+
+	^ (directorioActual creadoPorUsuario nombreEsIgual: (usuarioLogueado nombre))! !
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 18:59:27'!
+elDirectorioActualFueCreadoPorElUsuarioLogueadoOElUsuarioEsRoot
+
+	^ self elDirectorioActualFueCreadoPorElUsuarioLogueado | (self elUsuarioLogueadoEsRoot)! !
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 18:37:46'!
+elUsuarioLogueadoCreoEl: unArchivo
+
+	^ (unArchivo creadoPorUsuario nombreEsIgual: (usuarioLogueado nombre))! !
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 18:39:12'!
+elUsuarioLogueadoEsRoot
+
+	^ (usuarioLogueado isMemberOf: RootUser)! !
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 18:40:17'!
+elUsuarioLogueadoEsRootOCreoEl: unArchivo
+
+	^ (self elUsuarioLogueadoCreoEl: unArchivo) | (self elUsuarioLogueadoEsRoot)! !
 
 !Terminal methodsFor: 'testing' stamp: 'dk 11/15/2021 23:17:15'!
 esDirectoRaiz
@@ -1295,34 +1515,43 @@ estaParadaEnElDirectorioRaiz
 
 	^ self esDirectoRaiz .! !
 
-!Terminal methodsFor: 'testing' stamp: 'dk 11/14/2021 20:30:32'!
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 19:02:40'!
+existeEnElDirectorioActualUnaCarpetaConElMismoNombreA: unaCarpeta
+
+	|listaDeCarpetasEnElDirectorioActual|
+	listaDeCarpetasEnElDirectorioActual _ directorioActual listaDeCarpetas.
+
+	 (listaDeCarpetasEnElDirectorioActual anySatisfy: [:unaCarpetaEnLaLista | self unaCarpetaNombreEsIgual: unaCarpeta a: unaCarpetaEnLaLista]) 
+		ifTrue: [self errorLaCarpetaYaExiste] ! !
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 20:43:24'!
+existeEnLaListaDeUsuariosEl: unUser
+
+	^ listaDeUsuarios anySatisfy: [:unUserEnLaLista | (unUserEnLaLista nombreEsIgual: unUser nombre)]! !
+
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 21:26:32'!
 tieneAlUsuario: unUser 
 
-	^ listaDeUsuarios includes: unUser .! !
+	^ listaDeUsuarios anySatisfy: [:unUserEnLaLista | unUserEnLaLista nombreEsIgual: unUser nombre] .! !
 
 !Terminal methodsFor: 'testing' stamp: 'dk 11/14/2021 20:58:39'!
 tieneAlUsuarioLogueado: unUsuario 
 	^ (self tieneUnUsuarioLogueado) & (self estaElUsuarioLogueado: unUsuario) .! !
 
-!Terminal methodsFor: 'testing' stamp: 'TC 11/14/2021 22:25:35'!
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 18:52:51'!
 tieneCarpetasEnElDirectorioActual
-	^ carpetaActual tieneCarpetas.! !
+	^ directorioActual tieneCarpetas.! !
 
-!Terminal methodsFor: 'testing' stamp: 'TC 11/16/2021 00:00:16'!
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 18:52:51'!
 tieneElArchivoEnElDirectorioActual: unArchivo
-	^ (carpetaActual listaDeArchivos) includes: unArchivo.! !
+	^ (directorioActual listaDeArchivos) includes: unArchivo.! !
 
 !Terminal methodsFor: 'testing' stamp: 'dk 11/16/2021 23:52:10'!
 tieneUnUsuarioLogueado
 
 	^ usuarioLogueado notNil ! !
 
-!Terminal methodsFor: 'testing' stamp: 'dk 11/14/2021 20:33:35'!
-unUsuarioTieneElMismoNombreQue: unUser
-
-	^ listaDeUsuarios anySatisfy: [:unUserEnLaLista | (unUserEnLaLista nombreEsIgual: unUser nombre)]! !
-
-!Terminal methodsFor: 'testing' stamp: 'dk 11/14/2021 20:34:13'!
+!Terminal methodsFor: 'testing' stamp: 'dk 11/20/2021 19:09:51'!
 unUsuarioTieneElMismoNombreYContraseñaQue: unUser
 
 	^ listaDeUsuarios anySatisfy: [:unUserEnLaLista | unUserEnLaLista esIgualElUserYContraseñaA: unUser]! !
@@ -1333,35 +1562,95 @@ unaCarpetaNombreEsIgual: unaCarpeta a: unaCarpetaEnLaLista
 	^ unaCarpetaEnLaLista nombreEsIgual: (unaCarpeta nombre)! !
 
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/15/2021 23:10:21'!
-agregarCarpeta: unaCarpeta
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:20:38'!
+agregarCarpetaEnElDirectorio: unaCarpeta
 
-	^ carpetaActual agregarCarpeta: unaCarpeta! !
+	^ directorioActual agregarCarpeta: unaCarpeta! !
 
-!Terminal methodsFor: 'public actions' stamp: 'TC 11/20/2021 00:46:30'!
-agregarPermisosDeEscritura: unUsuario en: unArchivoOCarpeta
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:21:18'!
+agregarPermisosDeEjecucion: unUsuario en: unArchivo
 	
 	|listaDeArchivosEnElDirectorioActual unArchivoEncontrado|
 	
-	listaDeArchivosEnElDirectorioActual _ carpetaActual listaDeArchivos.
+	listaDeArchivosEnElDirectorioActual _ directorioActual listaDeArchivos.
 	
-	unArchivoEncontrado _ listaDeArchivosEnElDirectorioActual detect: [:unArchivoEnLaLista| unArchivoEnLaLista nombreEsIgual: unArchivoOCarpeta nombre]
-		ifNone:[self errorArchivoExistente].  
+	unArchivoEncontrado _ self obtenerArchivo: unArchivo en: listaDeArchivosEnElDirectorioActual .
 		
-	" (((unArchivoEncontrado tienePermisosDeEscrituraDelUsuario: unUsuario) not) 
+	 ((unArchivoEncontrado tienePermisosDeEjecucionDelUsuario: unUsuario) 
 	| (unArchivoEncontrado creadoPorUsuario nombreEsIgual: (unUsuario nombre)) 
 	| (unUsuario isMemberOf: RootUser))
-	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de escritura sobre este archivo/carpeta']. "  
+	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de ejecucion sobre este archivo/carpeta'].
 	
-	unArchivoOCarpeta agregarPermisosParaEscribir: unUsuario.! !
+	usuarioLogueado agregarPermisosParaEjecutar: unArchivo para: unUsuario.! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/14/2021 23:55:27'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:31:18'!
+agregarPermisosDeEscritura: unUsuario 
+		
+	 ((directorioActual tienePermisosDeEscrituraDelUsuario: unUsuario) 
+	| (directorioActual creadoPorUsuario nombreEsIgual: (unUsuario nombre)) 
+	| (unUsuario isMemberOf: RootUser))
+	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de escritura sobre este archivo/carpeta'].
+	
+	usuarioLogueado agregarPermisosParaEscribir: directorioActual para: unUsuario.! !
+
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:20:55'!
+agregarPermisosDeEscritura: unUsuario en: unArchivo
+	
+	|listaDeArchivosEnElDirectorioActual unArchivoEncontrado|
+	
+	listaDeArchivosEnElDirectorioActual _ directorioActual listaDeArchivos.
+	
+	unArchivoEncontrado _ self obtenerArchivo: unArchivo en: listaDeArchivosEnElDirectorioActual .
+		
+	 ((unArchivoEncontrado tienePermisosDeEscrituraDelUsuario: unUsuario) 
+	| (unArchivoEncontrado creadoPorUsuario nombreEsIgual: (unUsuario nombre)) 
+	| (unUsuario isMemberOf: RootUser))
+	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de escritura sobre este archivo/carpeta'].
+	
+	usuarioLogueado agregarPermisosParaEscribir: unArchivo para: unUsuario.! !
+
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:16:18'!
+agregarPermisosDeLectura: unUsuario en: unArchivo
+
+	|listaDeArchivosEnElDirectorioActual unArchivoEncontrado|
+	
+	listaDeArchivosEnElDirectorioActual _ directorioActual listaDeArchivos.
+	
+	unArchivoEncontrado _ self obtenerArchivo: unArchivo en: listaDeArchivosEnElDirectorioActual .
+		
+	 ((unArchivoEncontrado tienePermisosDeLecturaDelUsuario: unUsuario) 
+	| (unArchivoEncontrado creadoPorUsuario nombreEsIgual: (unUsuario nombre)) 
+	| (unUsuario isMemberOf: RootUser))
+	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de lectura sobre este archivo/carpeta'].
+	
+	usuarioLogueado agregarPermisosParaLeer: unArchivo para: unUsuario.! !
+
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:52:43'!
+agregarPermisosDeLectura: unUsuario para: unaCarpeta 
+
+	|carpetaEncontrada|
+	
+	carpetaEncontrada _ self obtenerCarpetaDelDirectorioActual: unaCarpeta.
+	
+	((carpetaEncontrada tienePermisosDeLecturaDelUsuario: unUsuario) 
+	| (carpetaEncontrada creadoPorUsuario nombreEsIgual: (unUsuario nombre)) 
+	| (unUsuario isMemberOf: RootUser))
+	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de lectura sobre este archivo/carpeta'].
+	
+	usuarioLogueado agregarPermisosParaLeer: carpetaEncontrada para: unUsuario.! !
+
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 21:07:46'!
 borrarUsuario: unUser 
 
+	"Si el usuario logueado = usuarioABorrar... entonces error"
+	""
+	((usuarioLogueado nombre) = (unUser nombre)) 
+		ifTrue: [self error: 'El usuario no puede borrarse a el mismo'] .
+	
 	listaDeUsuarios remove: unUser 
 		ifAbsent: [self errorUsuarioNoExistente]! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/16/2021 23:40:27'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 18:53:46'!
 cd
 	
 	(self esDirectoRaiz ) 
@@ -1369,35 +1658,29 @@ cd
 			self error: 'No se puede volver, estas parado en root'
 		] ifFalse: [
 			listaDeDirectoriosVistos removeLast .
-			carpetaActual _ listaDeDirectoriosVistos last .	
+			directorioActual _ listaDeDirectoriosVistos last .	
 		]
 	! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/15/2021 23:12:56'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:06:47'!
 cd: unaCarpeta 
 	
-	| listaDeCarpetasEnElDirectorioActual carpetaSiguiente |
-	listaDeCarpetasEnElDirectorioActual _ carpetaActual listaDeCarpetas.
-	
-	carpetaSiguiente _ listaDeCarpetasEnElDirectorioActual detect: [:unaCarpetaEnLaLista | self unaCarpetaNombreEsIgual: unaCarpeta a: unaCarpetaEnLaLista] 
-		ifNone: [self error: 'La carpeta no existe en este directorio'.] .
-
+	| carpetaSiguiente |
+	carpetaSiguiente _ self obtenerCarpetaDelDirectorioActual: unaCarpeta.
 
 	listaDeDirectoriosVistos add: carpetaSiguiente .
-	carpetaActual _ (listaDeDirectoriosVistos last) .! !
+	directorioActual _ (listaDeDirectoriosVistos last) .! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/19/2021 23:06:05'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:57:09'!
 ejecutar: unArchivo 
-	"Ejecucion en nuestro dominion no hace nada. Solo se fija si existe y el usuario tiene permisos de ejecucion"
+	"Ejecucion en nuestro dominion no hace nada solo devolver el archivo. Solo se fija si existe y el usuario tiene permisos de ejecucion"
 	| listaDeArchivos  archivo|
-	listaDeArchivos _ carpetaActual listaDeArchivos .
+	listaDeArchivos _ directorioActual listaDeArchivos .
 	
-	archivo _ (listaDeArchivos detect: [:unArchivoEnLaLista | (unArchivoEnLaLista nombreEsIgual: unArchivo nombre)] 
-		ifNone: [ self error: 'El archivo que intenta ejecutar no existe']) .
+	archivo _ self obtenerArchivo: unArchivo en: listaDeArchivos .
 		
 	( (archivo tienePermisosDeEjecucionDelUsuario: usuarioLogueado) 
-		| (unArchivo creadoPorUsuario nombreEsIgual: (usuarioLogueado nombre)) 
-		| (usuarioLogueado isMemberOf: RootUser) )
+		| (self elUsuarioLogueadoEsRootOCreoEl: archivo) )
 		ifFalse: [self error: 'El usuario no tiene permisos de ejecucion'].
 		
 	^ archivo .! !
@@ -1407,123 +1690,110 @@ errorArchivoExistente
 
 	^ self error: 'No se puede crear un archivo con el mismo nombre'! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/18/2021 17:38:53'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 18:54:04'!
 filtrarCon: filtro
-	^ (filtro filtrarArchivosEnElDirectorio: carpetaActual listaDeArchivos). ! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/15/2021 23:08:43'!
+	^ (filtro filtrarArchivosEnElDirectorio: directorioActual listaDeArchivos). ! !
+
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 21:00:41'!
 ingresarUsuario: unUserAIngresar
 	
-	(self unUsuarioTieneElMismoNombreQue: unUserAIngresar) 
+	(self existeEnLaListaDeUsuariosEl: unUserAIngresar) 
 		ifTrue: [self errorContraseñaOUsuarioIncorrecto] 
 		ifFalse: [listaDeUsuarios add: unUserAIngresar].! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/16/2021 23:33:30'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 18:54:21'!
 iniciarSesion: unUserALoguease 
 	
 	(self unUsuarioTieneElMismoNombreYContraseñaQue: unUserALoguease) 
 		ifTrue: [usuarioLogueado _ unUserALoguease] 
 		ifFalse: [self errorContraseñaOUsuarioIncorrecto].! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/19/2021 23:24:11'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 22:41:54'!
 mkdir: unaCarpeta
 
-	|listaDeCarpetasEnElDirectorioActual|
-	listaDeCarpetasEnElDirectorioActual _ carpetaActual listaDeCarpetas.
-	
-	(listaDeCarpetasEnElDirectorioActual anySatisfy: [:unaCarpetaEnLaLista | self unaCarpetaNombreEsIgual: unaCarpeta a: unaCarpetaEnLaLista]) 
-		ifTrue: [self errorLaCarpetaYaExiste] .
-		
-	( (carpetaActual tienePermisosDeEscrituraDelUsuario: usuarioLogueado) 
-		| (carpetaActual creadoPorUsuario nombreEsIgual: (usuarioLogueado nombre)) 
-		| (usuarioLogueado isMemberOf: RootUser) )
+	self existeEnElDirectorioActualUnaCarpetaConElMismoNombreA: unaCarpeta .
+		"Refactor bien..."
+	( ((directorioActual tienePermisosDeEscrituraDelUsuario: usuarioLogueado) ) 
+		| ((directorioActual creadoPorUsuario nombre = usuarioLogueado nombre) & (self esDirectoRaiz) ) 
+		| (usuarioLogueado isMemberOf: RootUser) ) "Hay que manejar mejor root"
 		ifFalse: [self error: 'El usuario no tiene permisos de escritura'].
 	
 	unaCarpeta creadoPor: usuarioLogueado .
-	self agregarCarpeta: unaCarpeta! !
+	self agregarCarpetaEnElDirectorio: unaCarpeta! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/15/2021 23:10:56'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 21:22:05'!
 modificarUsuario: unUserAModificar por: unUserConModificaciones 
 
-	(self unUsuarioTieneElMismoNombreQue: unUserAModificar) 
-		ifTrue: [
-			self ingresarUsuario: unUserConModificaciones .
-			self borrarUsuario: unUserAModificar .
-		] ifFalse: [
-			self errorUsuarioNoExistente
-		].! !
+	| usuarioEncontrado |
+	usuarioEncontrado _ listaDeUsuarios detect: [:unUsuarioEnLaLista | unUsuarioEnLaLista nombreEsIgual: unUserAModificar nombre]
+		ifNone: [ 	self errorUsuarioNoExistente		] .
+		
+	unUserAModificar modificarPor: unUserConModificaciones .! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/19/2021 22:48:44'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:48:25'!
 nano: unArchivo edicion: unTexto
 	
 	| listaDeArchivos archivoAModificar |
-	listaDeArchivos _ carpetaActual listaDeArchivos .
+	listaDeArchivos _ directorioActual listaDeArchivos .
 	
-	archivoAModificar _ (listaDeArchivos detect: [:unArchivoEnLaLista | (unArchivoEnLaLista nombreEsIgual: unArchivo nombre)] 
-		ifNone: [ self error: 'El archivo que intenta modificar no existe']) .
+	archivoAModificar _ self obtenerArchivo: unArchivo en: listaDeArchivos .
 		
 		
 	( (archivoAModificar tienePermisosDeEscrituraDelUsuario: usuarioLogueado) 
-		| (archivoAModificar creadoPorUsuario nombreEsIgual: (usuarioLogueado nombre)) 
-		| (usuarioLogueado isMemberOf: RootUser) )
+		| (self elUsuarioLogueadoEsRootOCreoEl: archivoAModificar) )
 		ifFalse: [self error: 'El usuario no tiene permisos de escritura'].
 		
 	archivoAModificar modificarTexto: unTexto .! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/19/2021 23:09:30'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:51:02'!
 rm: unArchivoABorrar
 
 	|archivoABorrar listaDeArchivos|
-	listaDeArchivos _ carpetaActual listaDeArchivos.
+	listaDeArchivos _ directorioActual listaDeArchivos.
 	
-	archivoABorrar _ listaDeArchivos detect:[: unArchivo| unArchivo nombreEsIgual: unArchivoABorrar nombre] 
-	ifNone:[self error: 'El archivo a borrar no existe'].
+	archivoABorrar _ self obtenerArchivo: unArchivoABorrar en: listaDeArchivos.
 	
 	( (archivoABorrar tienePermisosDeEscrituraDelUsuario: usuarioLogueado) 
-		| (archivoABorrar creadoPorUsuario nombreEsIgual: (usuarioLogueado nombre)) 
-		| (usuarioLogueado isMemberOf: RootUser) )
+		| (self elUsuarioLogueadoEsRootOCreoEl: archivoABorrar) )
 		ifFalse: [self error: 'El usuario no tiene permisos de escritura'].
 	
-	carpetaActual listaDeArchivos remove: archivoABorrar.
+	directorioActual listaDeArchivos remove: archivoABorrar.
 	! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/19/2021 23:28:59'!
+!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:52:04'!
 touch: unArchivo
 
 	|listaDeArchivosEnElDirectorioActual|
-	listaDeArchivosEnElDirectorioActual _ carpetaActual listaDeArchivos.
+	listaDeArchivosEnElDirectorioActual _ directorioActual listaDeArchivos.
 	
-	(listaDeArchivosEnElDirectorioActual anySatisfy: [:unArchivoEnLaLista| unArchivoEnLaLista nombreEsIgual: unArchivo nombre]) 
-		ifTrue:[self errorArchivoExistente] .
+	self elArchivo: unArchivo existeEnElDirectorioActual: listaDeArchivosEnElDirectorioActual .
 	
-	( (carpetaActual tienePermisosDeEscrituraDelUsuario: usuarioLogueado) 
-		| (carpetaActual creadoPorUsuario nombreEsIgual: (usuarioLogueado nombre)) 
-		| (usuarioLogueado isMemberOf: RootUser) )
+	( (directorioActual tienePermisosDeEscrituraDelUsuario: usuarioLogueado) 
+		| (self elDirectorioActualFueCreadoPorElUsuarioLogueadoOElUsuarioEsRoot) )
 		ifFalse: [self error: 'El usuario no tiene permisos de escritura'].
 	
 	unArchivo creadoPor: usuarioLogueado.  
 	listaDeArchivosEnElDirectorioActual add: unArchivo.! !
 
 
-!Terminal methodsFor: 'accessing' stamp: 'dk 11/15/2021 23:13:48'!
-carpetaActual
-	
-	^ carpetaActual! !
-
-!Terminal methodsFor: 'accessing' stamp: 'dk 11/19/2021 22:37:50'!
+!Terminal methodsFor: 'accessing' stamp: 'dk 11/20/2021 19:45:24'!
 cat: unArchivo 
 	
-	| listaDeArchivos  archivo|
-	listaDeArchivos _ carpetaActual listaDeArchivos .
-	archivo _ (listaDeArchivos detect: [:unArchivoEnLaLista | (unArchivoEnLaLista nombreEsIgual: unArchivo nombre)] 
-		ifNone: [ self error: 'El archivo que intenta leer no existe']) .
+	| listaDeArchivos  archivoDeLectura|
+	listaDeArchivos _ directorioActual listaDeArchivos .
+	archivoDeLectura _ self obtenerArchivo: unArchivo en: listaDeArchivos .
 	
-	( (archivo tienePermisosDeLecturaDelUsuario: usuarioLogueado) 
-		| (unArchivo creadoPorUsuario nombreEsIgual: (usuarioLogueado nombre)) 
-		| (usuarioLogueado isMemberOf: RootUser) )
+	( (archivoDeLectura tienePermisosDeLecturaDelUsuario: usuarioLogueado) 
+		| (self elUsuarioLogueadoEsRootOCreoEl: archivoDeLectura))
 		ifFalse: [self error: 'El usuario no tiene permisos de lectura'].
 		
-	^ archivo texto.	 ! !
+	^ archivoDeLectura texto.	 ! !
+
+!Terminal methodsFor: 'accessing' stamp: 'dk 11/20/2021 18:53:13'!
+directorioActual
+	
+	^ directorioActual! !
 
 !Terminal methodsFor: 'accessing' stamp: 'dk 11/15/2021 23:06:59'!
 errorContraseñaOUsuarioIncorrecto
@@ -1540,22 +1810,28 @@ errorUsuarioNoExistente
 
 	^ self error: 'El usuario no existe'! !
 
-!Terminal methodsFor: 'accessing' stamp: 'dk 11/17/2021 00:51:47'!
-filtrarArchivosQueContengan: unTexto 
-	
-	| listaDeArchivos |
-	listaDeArchivos _ carpetaActual listaDeArchivos .
-	
-	^ listaDeArchivos select: [:archivoEnLaLista | archivoEnLaLista contieneElTexto: unTexto]
-	! !
-
-!Terminal methodsFor: 'accessing' stamp: 'TC 11/16/2021 00:21:31'!
+!Terminal methodsFor: 'accessing' stamp: 'dk 11/20/2021 18:52:51'!
 ls
 	|listaDeArchivosYCarpetas|
 	listaDeArchivosYCarpetas _ Set new.
-	listaDeArchivosYCarpetas addAll: carpetaActual listaDeArchivos.
-	listaDeArchivosYCarpetas addAll: carpetaActual listaDeCarpetas.
+	listaDeArchivosYCarpetas addAll: directorioActual listaDeArchivos.
+	listaDeArchivosYCarpetas addAll: directorioActual listaDeCarpetas.
 	^ listaDeArchivosYCarpetas.! !
+
+!Terminal methodsFor: 'accessing' stamp: 'dk 11/20/2021 19:04:06'!
+obtenerArchivo: unArchivo en: listaDeArchivos
+
+	^ listaDeArchivos detect: [:unArchivoEnLaLista | (unArchivoEnLaLista nombreEsIgual: unArchivo nombre)] 
+		ifNone: [ self error: 'El archivo no existe']! !
+
+!Terminal methodsFor: 'accessing' stamp: 'dk 11/20/2021 19:06:07'!
+obtenerCarpetaDelDirectorioActual: unaCarpeta
+
+		| listaDeCarpetasEnElDirectorioActual |
+	listaDeCarpetasEnElDirectorioActual _ directorioActual listaDeCarpetas.
+	
+	^ listaDeCarpetasEnElDirectorioActual detect: [:unaCarpetaEnLaLista | self unaCarpetaNombreEsIgual: unaCarpeta a: unaCarpetaEnLaLista] 
+		ifNone: [self error: 'La carpeta no existe en este directorio'.] .! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1601,6 +1877,13 @@ nombreEsIgual: unNombre
 
 	^ nombre = unNombre ! !
 
+
+!User methodsFor: 'public actions' stamp: 'dk 11/20/2021 21:27:29'!
+modificarPor: unUsuarioConModificaciones 
+	
+	nombre _ unUsuarioConModificaciones nombre .
+	contraseña _ unUsuarioConModificaciones contraseña .! !
+
 
 !classDefinition: #PublicUser category: 'Grupo1-TP-Final'!
 User subclass: #PublicUser
@@ -1614,6 +1897,7 @@ initializeConNombre: unNombre yContraseña: unaContraseña
 
 	nombre := unNombre.
 	contraseña := unaContraseña.! !
+
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1639,6 +1923,21 @@ initializeConNombre: unNombre yContraseña: unaContraseña
 	nombre := unNombre.
 	contraseña := unaContraseña.! !
 
+
+!RootUser methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:19:37'!
+agregarPermisosParaEjecutar: unArchivo para: unUsuario
+	
+	unArchivo agregarPermisosParaEjecutar: unUsuario .! !
+
+!RootUser methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:19:23'!
+agregarPermisosParaEscribir: unArchivo para: unUsuario
+	
+	unArchivo agregarPermisosParaEscribir: unUsuario .! !
+
+!RootUser methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:17:57'!
+agregarPermisosParaLeer: unArchivo para: unUsuario
+	
+	unArchivo agregarPermisosParaLeer: unUsuario .! !
 
 !RootUser methodsFor: 'public actions' stamp: 'dk 11/14/2021 20:38:19'!
 borrarUsuario: unUser en: unaTerminal
