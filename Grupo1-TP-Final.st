@@ -1017,16 +1017,118 @@ test059_cuandoUnUsuarioRootLeAgregaUnPermisoDeLecturaAUnUsuario_esteTeniaPermiso
         signal: Error
         withDescription: 'El usuario es owner/root o ya tiene permisos de lectura sobre este archivo/carpeta'.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/23/2021 02:00:18'!
-test060_cuandoUnUsuarioRootLogueadoFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeEscrituraPorqueEsRoot
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/23/2021 21:40:52'!
+test060_cuandoSeFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeEscrituraPorqueEsUsuarioPublico
 
 	| unaTerminal listaDeArchivosEncontrados unFiltro unFiltroDePermiso |
 	"Setup"
-	unaTerminal _ self unaTerminalRootConArchivos .
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321.
+	unaTerminal iniciarSesion: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto2.
+	listaDeArchivosEncontrados _ Set new .
+	listaDeArchivosEncontrados add: archivoDeTexto2. 
+	unFiltroDePermiso _ FilterPermissonEscritura conElUsuario: (unUserPublicDiego4321). 
+	unFiltro _ FiltroCompuesto filtrarPor: { unFiltroDePermiso } .
+	
+	"Exercise & Assert"
+	Assert that: (unaTerminal filtrarCon: unFiltro) isEqualTo: listaDeArchivosEncontrados .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/23/2021 21:40:33'!
+test061_cuandoSeFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeEscrituraPorqueEsUsuarioRoot
+
+	| unaTerminal listaDeArchivosEncontrados unFiltro unFiltroDePermiso |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321.
+	unaTerminal iniciarSesion: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto2.
 	listaDeArchivosEncontrados _ Set new .
 	listaDeArchivosEncontrados add: archivoDeTexto.
 	listaDeArchivosEncontrados add: archivoDeTexto2. 
-	unFiltroDePermiso _ FilterPermissonEscritura conElUsuario: (unaTerminal usuarioLogueado). "Esto es por usuario root".
+	unFiltroDePermiso _ FilterPermissonEscritura conElUsuario: (unUserRootDiego1234). 
+	unFiltro _ FiltroCompuesto filtrarPor: { unFiltroDePermiso } .
+	
+	"Exercise & Assert"
+	Assert that: (unaTerminal filtrarCon: unFiltro) isEqualTo: listaDeArchivosEncontrados .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/23/2021 21:40:21'!
+test062_cuandoSeFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeLecturaPorqueEsUsuarioPublico
+
+	| unaTerminal listaDeArchivosEncontrados unFiltro unFiltroDePermiso |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321.
+	unaTerminal iniciarSesion: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto2.
+	listaDeArchivosEncontrados _ Set new .
+	listaDeArchivosEncontrados add: archivoDeTexto2. 
+	unFiltroDePermiso _ FilterPermissonLectura conElUsuario: (unUserPublicDiego4321).
+	unFiltro _ FiltroCompuesto filtrarPor: { unFiltroDePermiso } .
+	
+	"Exercise & Assert"
+	Assert that: (unaTerminal filtrarCon: unFiltro) isEqualTo: listaDeArchivosEncontrados .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/23/2021 21:46:04'!
+test063_cuandoSeFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeLecturaPorqueEsUsuarioRoot
+
+	| unaTerminal listaDeArchivosEncontrados unFiltro unFiltroDePermiso |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321.
+	unaTerminal iniciarSesion: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto2.
+	listaDeArchivosEncontrados _ Set new .
+	listaDeArchivosEncontrados add: archivoDeTexto.
+	listaDeArchivosEncontrados add: archivoDeTexto2. 
+	unFiltroDePermiso _ FilterPermissonEscritura conElUsuario: (unUserRootDiego1234). 
+	unFiltro _ FiltroCompuesto filtrarPor: { unFiltroDePermiso } .
+	
+	"Exercise & Assert"
+	Assert that: (unaTerminal filtrarCon: unFiltro) isEqualTo: listaDeArchivosEncontrados .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/23/2021 21:46:51'!
+test064_cuandoSeFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeEjecucionPorqueEsUsuarioPublico
+
+	| unaTerminal listaDeArchivosEncontrados unFiltro unFiltroDePermiso |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321.
+	unaTerminal iniciarSesion: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto2.
+	listaDeArchivosEncontrados _ Set new .
+	listaDeArchivosEncontrados add: archivoDeTexto2. 
+	unFiltroDePermiso _ FilterPermissonEjecucion conElUsuario: (unUserPublicDiego4321).
+	unFiltro _ FiltroCompuesto filtrarPor: { unFiltroDePermiso } .
+	
+	"Exercise & Assert"
+	Assert that: (unaTerminal filtrarCon: unFiltro) isEqualTo: listaDeArchivosEncontrados .! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/23/2021 21:49:57'!
+test065_cuandoSeFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeEscrituraPorqueEsUsuarioRoot
+
+	| unaTerminal listaDeArchivosEncontrados unFiltro unFiltroDePermiso |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	unaTerminal touch: archivoDeTexto.
+	unaTerminal ingresarUsuario: unUserPublicDiego4321.
+	unaTerminal agregarPermisosDeEscritura: unUserPublicDiego4321.
+	unaTerminal iniciarSesion: unUserPublicDiego4321.
+	unaTerminal touch: archivoDeTexto2.
+	listaDeArchivosEncontrados _ Set new .
+	listaDeArchivosEncontrados add: archivoDeTexto.
+	listaDeArchivosEncontrados add: archivoDeTexto2. 
+	unFiltroDePermiso _ FilterPermissonEjecucion conElUsuario: (unUserRootDiego1234). 
 	unFiltro _ FiltroCompuesto filtrarPor: { unFiltroDePermiso } .
 	
 	"Exercise & Assert"
@@ -1131,10 +1233,18 @@ agregarPermisosParaLeer: unUsuario
 	
 	permisosDeLectura agregar: unUsuario.! !
 
-!File methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:14:35'!
+!File methodsFor: 'public actions' stamp: 'TC 11/23/2021 21:10:35'!
 creadoPor: unUsuario
 
-	creadoPorUsuario _ unUsuario.! !
+	creadoPorUsuario _                unUsuario.
+	
+	(unUsuario isMemberOf: PublicUser) 
+	ifTrue:[ 
+			permisosDeEjecucion agregar: unUsuario.
+			permisosDeEscritura  agregar: unUsuario.
+			permisosDeLectura    agregar: unUsuario.
+		  ].
+! !
 
 !File methodsFor: 'public actions' stamp: 'dk 11/17/2021 00:39:11'!
 modificarTexto: unTexto 
@@ -1283,6 +1393,33 @@ Object subclass: #FilterPermisson
 	category: 'Grupo1-TP-Final'!
 
 
+!classDefinition: #FilterPermissonEjecucion category: 'Grupo1-TP-Final'!
+Object subclass: #FilterPermissonEjecucion
+	instanceVariableNames: 'usuario'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!FilterPermissonEjecucion methodsFor: 'initialization' stamp: 'TC 11/23/2021 21:47:48'!
+initializeConElUsuario: unUsuario 
+	usuario := unUsuario.! !
+
+
+!FilterPermissonEjecucion methodsFor: 'testing' stamp: 'TC 11/23/2021 21:48:52'!
+puedeFiltrar: unArchivo 
+	 ^ (unArchivo tienePermisosDeEjecucionDelUsuario: usuario) | (usuario isMemberOf: RootUser).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'FilterPermissonEjecucion class' category: 'Grupo1-TP-Final'!
+FilterPermissonEjecucion class
+	instanceVariableNames: ''!
+
+!FilterPermissonEjecucion class methodsFor: 'instance creation' stamp: 'TC 11/23/2021 21:47:22'!
+conElUsuario: unUsuario 
+	^self new initializeConElUsuario: unUsuario. ! !
+
+
 !classDefinition: #FilterPermissonEscritura category: 'Grupo1-TP-Final'!
 Object subclass: #FilterPermissonEscritura
 	instanceVariableNames: 'usuario'
@@ -1295,9 +1432,9 @@ initializeConElUsuario: unUsuario
 	usuario := unUsuario.! !
 
 
-!FilterPermissonEscritura methodsFor: 'testing' stamp: 'TC 11/23/2021 01:54:27'!
+!FilterPermissonEscritura methodsFor: 'testing' stamp: 'TC 11/23/2021 21:45:19'!
 puedeFiltrar: unArchivo 
-	 ^ (unArchivo tienePermisosDeEscrituraDelUsuario: usuario) | (usuario isMemberOf: RootUser) | (unArchivo creadoPorUsuario nombre = usuario nombre).! !
+	 ^ (unArchivo tienePermisosDeEscrituraDelUsuario: usuario) | (usuario isMemberOf: RootUser).! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1308,6 +1445,33 @@ FilterPermissonEscritura class
 !FilterPermissonEscritura class methodsFor: 'instance creation' stamp: 'TC 11/23/2021 01:47:57'!
 conElUsuario: unUsuario 
 	^self new initializeConElUsuario: unUsuario.! !
+
+
+!classDefinition: #FilterPermissonLectura category: 'Grupo1-TP-Final'!
+Object subclass: #FilterPermissonLectura
+	instanceVariableNames: 'usuario'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!FilterPermissonLectura methodsFor: 'initialization' stamp: 'TC 11/23/2021 21:42:40'!
+initializeConElUsuario: unUsuario .
+	usuario := unUsuario.! !
+
+
+!FilterPermissonLectura methodsFor: 'testing' stamp: 'TC 11/23/2021 21:45:05'!
+puedeFiltrar: unArchivo
+	^ (unArchivo tienePermisosDeLecturaDelUsuario: usuario) | (usuario isMemberOf: RootUser).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'FilterPermissonLectura class' category: 'Grupo1-TP-Final'!
+FilterPermissonLectura class
+	instanceVariableNames: ''!
+
+!FilterPermissonLectura class methodsFor: 'instance creation' stamp: 'TC 11/23/2021 21:41:57'!
+conElUsuario: unUsuario 
+	^self new initializeConElUsuario: unUsuario. ! !
 
 
 !classDefinition: #Folder category: 'Grupo1-TP-Final'!
@@ -1616,7 +1780,7 @@ agregarCarpetaEnElDirectorio: unaCarpeta
 
 	^ directorioActual agregarCarpeta: unaCarpeta! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:21:18'!
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/23/2021 20:43:31'!
 agregarPermisosDeEjecucion: unUsuario en: unArchivo
 	
 	|listaDeArchivosEnElDirectorioActual unArchivoEncontrado|
@@ -1626,7 +1790,6 @@ agregarPermisosDeEjecucion: unUsuario en: unArchivo
 	unArchivoEncontrado _ self obtenerArchivo: unArchivo en: listaDeArchivosEnElDirectorioActual .
 		
 	 ((unArchivoEncontrado tienePermisosDeEjecucionDelUsuario: unUsuario) 
-	| (unArchivoEncontrado creadoPorUsuario nombreEsIgual: (unUsuario nombre)) 
 	| (unUsuario isMemberOf: RootUser))
 	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de ejecucion sobre este archivo/carpeta'].
 	
@@ -1642,7 +1805,7 @@ agregarPermisosDeEscritura: unUsuario
 	
 	usuarioLogueado agregarPermisosParaEscribir: directorioActual para: unUsuario.! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:20:55'!
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/23/2021 20:43:21'!
 agregarPermisosDeEscritura: unUsuario en: unArchivo
 	
 	|listaDeArchivosEnElDirectorioActual unArchivoEncontrado|
@@ -1652,13 +1815,12 @@ agregarPermisosDeEscritura: unUsuario en: unArchivo
 	unArchivoEncontrado _ self obtenerArchivo: unArchivo en: listaDeArchivosEnElDirectorioActual .
 		
 	 ((unArchivoEncontrado tienePermisosDeEscrituraDelUsuario: unUsuario) 
-	| (unArchivoEncontrado creadoPorUsuario nombreEsIgual: (unUsuario nombre)) 
 	| (unUsuario isMemberOf: RootUser))
 	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de escritura sobre este archivo/carpeta'].
 	
 	usuarioLogueado agregarPermisosParaEscribir: unArchivo para: unUsuario.! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/23/2021 00:16:18'!
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/23/2021 20:42:08'!
 agregarPermisosDeLectura: unUsuario en: unArchivo
 
 	|listaDeArchivosEnElDirectorioActual unArchivoEncontrado|
@@ -1668,7 +1830,6 @@ agregarPermisosDeLectura: unUsuario en: unArchivo
 	unArchivoEncontrado _ self obtenerArchivo: unArchivo en: listaDeArchivosEnElDirectorioActual .
 		
 	 ((unArchivoEncontrado tienePermisosDeLecturaDelUsuario: unUsuario) 
-	| (unArchivoEncontrado creadoPorUsuario nombreEsIgual: (unUsuario nombre)) 
 	| (unUsuario isMemberOf: RootUser))
 	ifTrue:[self error: 'El usuario es owner/root o ya tiene permisos de lectura sobre este archivo/carpeta'].
 	
@@ -1810,7 +1971,7 @@ rm: unArchivoABorrar
 	directorioActual listaDeArchivos remove: archivoABorrar.
 	! !
 
-!Terminal methodsFor: 'public actions' stamp: 'dk 11/20/2021 19:52:04'!
+!Terminal methodsFor: 'public actions' stamp: 'TC 11/23/2021 20:37:40'!
 touch: unArchivo
 
 	|listaDeArchivosEnElDirectorioActual|
