@@ -1114,7 +1114,7 @@ test064_cuandoSeFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeEjecucio
 	"Exercise & Assert"
 	Assert that: (unaTerminal filtrarCon: unFiltro) isEqualTo: listaDeArchivosEncontrados .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/23/2021 21:49:57'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 11/24/2021 00:16:19'!
 test065_cuandoSeFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeEscrituraPorqueEsUsuarioRoot
 
 	| unaTerminal listaDeArchivosEncontrados unFiltro unFiltroDePermiso |
@@ -1129,7 +1129,7 @@ test065_cuandoSeFiltreUnArchivoPorUnPermisoDado_esteEncuentraResultadoDeEscritur
 	listaDeArchivosEncontrados add: archivoDeTexto.
 	listaDeArchivosEncontrados add: archivoDeTexto2. 
 	unFiltroDePermiso _ FilterPermissonEjecucion conElUsuario: (unUserRootDiego1234). 
-	unFiltro _ FiltroCompuesto filtrarPor: { unFiltroDePermiso } .
+	unFiltro _ FiltroCompuesto filtrarPor: { unFiltroDePermiso }.
 	
 	"Exercise & Assert"
 	Assert that: (unaTerminal filtrarCon: unFiltro) isEqualTo: listaDeArchivosEncontrados .! !
