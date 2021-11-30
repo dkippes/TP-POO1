@@ -14,3 +14,11 @@ Proyecto final de Progracion Orientada a Objetos
 
 23/11: 
 Completamos toda la parte de los filtros de las colecciones.
+
+30/11:
+-Se arreglaron parte de las correcciones que Gastón nos remarcó.
+-Falta ponerle dueño a los archivos, es decir: Inicializar el archivo con el user creador.
+-Falta cambiar el nombre a la clase padre "SistemaDeArchivos" por algo parecido a Archivos.
+-Falta ver el tema de las excepciones/contratos que Gastón nos remarcó.
+-Falta hacer refactor en los metodos de cada clase.
+-Sacar el mensaje "isNil" y cambiarlo por otro que responda algo parecido a ese mensaje.
