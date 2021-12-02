@@ -22,3 +22,12 @@ Completamos toda la parte de los filtros de las colecciones.
 -Falta ver el tema de las excepciones/contratos que Gastón nos remarcó.
 -Falta hacer refactor en los metodos de cada clase.
 -Sacar el mensaje "isNil" y cambiarlo por otro que responda algo parecido a ese mensaje.
+
+02/12:
+
+-Para el agregado de streams: 
+root: 
+carpeta1  lectura  [Pepito, Laura] |escritura  [Pepito, Juancito]| 
+
+-rm: <= tiene que borrar una carpeta.
+
