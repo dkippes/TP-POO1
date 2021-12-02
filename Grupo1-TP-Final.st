@@ -20,13 +20,13 @@ test001_cuandoUnaCarpetaEsCreada_EstaTieneUnNombre_UnaListaDeArchivos_UnaListaDe
 	Assert that: unaCarpetaNueva fechaDeCreacion isEqualTo: unaFechaDeCreacion.
 	Assert that: unaCarpetaNueva fechaDeModificacion isEqualTo: unaFechaDeCreacion.! !
 
-!SistemaDeArchivosTest methodsFor: 'sistemaDeArchivos_testing' stamp: 'dk 11/25/2021 01:26:40'!
+!SistemaDeArchivosTest methodsFor: 'sistemaDeArchivos_testing' stamp: 'TC 12/2/2021 18:05:33'!
 test002_cuandoUnArchivoSeCrea_EsteTieneNombre_UnaFechaDeCreacionYUnaFechaDeModificacion
 	
 	"Setup"
 	| unArchivoNuevo unaFechaDeCreacion |
 	
-	unArchivoNuevo _ File conNombre: 'Archivo1.txt'.
+	unArchivoNuevo _ TextFile conNombre: 'Archivo1.txt'.
 	unaFechaDeCreacion _ FixedGregorianDate today.
 	
 	Assert that: unArchivoNuevo nombre isEqualTo: 'Archivo1.txt'.
@@ -371,13 +371,13 @@ test018_cuandoUnUsuarioIngresaAVariasCarpetas_esteSePosicionaEnRoot
         withDescription: self errorNoSePuedeRetrocederDesdeRoot .
 	Assert isTrue: (unaTerminal estaParadaEnElDirectorioRaiz) .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/25/2021 01:43:21'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/2/2021 18:05:33'!
 test019_cuandoUnUsuarioEscribeElComandoTouch_esteCreaUnArchivo
 
 	| unaTerminal unArchivoNuevo |
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	unArchivoNuevo _ File conNombre: 'Archivo1.txt' .
+	unArchivoNuevo _ TextFile conNombre: 'Archivo1.txt' .
 	
 	"Exercise"
 	unaTerminal touch: unArchivoNuevo.
@@ -1381,8 +1381,28 @@ test081_cuandoUnUsuarioRoot_quieraAgregarPermisosAUnUsuarioInexistente_esteNoPue
         signal: Error
         withDescription: 'El usuario no existe'.! !
 
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/2/2021 18:49:40'!
+test082_seEscribeUnArchivoVacioDelDirectorioActual
 
-!TerminalTest methodsFor: 'setUp/tearDown' stamp: 'dk 11/25/2021 01:41:11'!
+	| unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+
+	Assert that: unaTerminal textoEscritoHastaElMomento isEqualTo: ''.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/2/2021 18:49:15'!
+test083_cuandoSeEscribeUnArchivoDeTextoRealEsteTieneUnaCarpetaVacia
+
+	| unaTerminal |
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	
+	unaTerminal mkdir: carpetaDiego.
+
+	Assert that: unaTerminal textoEscritoHastaElMomento isEqualTo: ''.! !
+
+
+!TerminalTest methodsFor: 'setUp/tearDown' stamp: 'TC 12/2/2021 18:05:33'!
 setUp
 
 	unUserRootDefault _ RootUser conNombre: 'root' yContraseña: 'root' .
@@ -1395,8 +1415,8 @@ setUp
 	carpetaTomas _ Folder	 conNombre: 'Tomas' .
 	carpetaDiego _ Folder	 conNombre: 'Diego' .
 	
-	archivoDeTexto _ File conNombre: 'Archivo1.txt' .
-	archivoDeTexto2 _ File conNombre: 'Archivo2.txt' .
+	archivoDeTexto _ TextFile conNombre: 'Archivo1.txt' .
+	archivoDeTexto2 _ TextFile conNombre: 'Archivo2.txt' .
 	
 	filtroDeTexto _ FilterText conElTexto: 'Texto Modificado' .
 	filtroDeFecha _ FilterCreationFile conLaFecha: FixedGregorianDate today .
@@ -1404,6 +1424,269 @@ setUp
 	filtroCompuestoPorTexto _ FiltroCompuesto filtrarPor: { filtroDeTexto } .
 	filtroCompuestoPorFecha _ FiltroCompuesto filtrarPor: { filtroDeFecha } .
 	filtroCompuestoPorTextoYFecha _ FiltroCompuesto filtrarPor: { filtroDeTexto . filtroDeFecha } .! !
+
+
+!classDefinition: #ArchivoDeTexto category: 'Grupo1-TP-Final'!
+Object subclass: #ArchivoDeTexto
+	instanceVariableNames: 'contenido'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!ArchivoDeTexto methodsFor: 'initialization' stamp: 'GET 11/25/2020 22:38:15'!
+initialize
+	
+	contenido _ ReadWriteStream on: ''.! !
+
+
+!ArchivoDeTexto methodsFor: 'public actions' stamp: 'GET 11/25/2020 22:38:29'!
+forceWriteStreamDo: aBlockClosure 
+	
+	aBlockClosure value: contenido .! !
+
+
+!ArchivoDeTexto methodsFor: 'accessing' stamp: 'GET 11/25/2020 22:38:50'!
+fileContents
+	^ contenido contents .! !
+
+
+!classDefinition: #File category: 'Grupo1-TP-Final'!
+Object subclass: #File
+	instanceVariableNames: 'nombre fechaDeCreacion fechaDeModificacion creadoPorUsuario permisosDeLectura permisosDeEscritura'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!File methodsFor: 'subclass message' stamp: 'TC 11/30/2021 01:04:49'!
+creadoPor: unUsuario 
+
+	self subclassResponsibility.! !
+
+!File methodsFor: 'subclass message' stamp: 'TC 11/30/2021 01:15:02'!
+tienePermisoDeLecturaDelUsuario: unUsuario 
+
+	^ self subclassResponsibility.! !
+
+!File methodsFor: 'subclass message' stamp: 'TC 11/30/2021 01:14:20'!
+tienePermisosDeEscrituraDelUsuario: unUsuario 
+
+	^ self subclassResponsibility.! !
+
+
+!File methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:10:34'!
+creadoPorUsuario
+
+	^ creadoPorUsuario.! !
+
+!File methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:10:30'!
+fechaDeCreacion
+
+	^fechaDeCreacion! !
+
+!File methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:10:27'!
+fechaDeModificacion
+
+	^ fechaDeModificacion! !
+
+!File methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:10:21'!
+nombre
+
+	^nombre! !
+
+
+!File methodsFor: 'testing' stamp: 'TC 11/30/2021 01:13:06'!
+nombreEsIgual: unNombre
+
+	^ nombre = unNombre.! !
+
+
+!File methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:17:32'!
+agregarPermisosParaEscribir: unUsuario 
+
+	permisosDeEscritura agregar: unUsuario.! !
+
+!File methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:17:11'!
+agregarPermisosParaLeer: unUsuario 
+	
+	permisosDeLectura agregar: unUsuario.! !
+
+!File methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:17:46'!
+sacarPermisosParaEscribir: unUsuario 
+	
+	permisosDeEscritura sacar: unUsuario ! !
+
+!File methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:18:11'!
+sacarPermisosParaLeer: unUsuario 
+	
+	permisosDeLectura sacar: unUsuario ! !
+
+
+!classDefinition: #Folder category: 'Grupo1-TP-Final'!
+File subclass: #Folder
+	instanceVariableNames: 'carpetas archivos'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!Folder methodsFor: 'initialization' stamp: 'TC 11/30/2021 01:07:48'!
+inicializarConNombre: unNombre
+
+	nombre _ unNombre.! !
+
+!Folder methodsFor: 'initialization' stamp: 'TC 11/30/2021 01:23:14'!
+initialize
+
+	carpetas _ Set new.
+	archivos _ Set new. 
+	fechaDeCreacion _ FixedGregorianDate today.
+	fechaDeModificacion _ FixedGregorianDate today.
+	
+	permisosDeLectura _ PermisoDeLectura new.
+	permisosDeEscritura _ PermisoDeEscritura new.! !
+
+
+!Folder methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:23:38'!
+archivos
+
+	^archivos! !
+
+!Folder methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:23:55'!
+carpetas
+	^ carpetas! !
+
+
+!Folder methodsFor: 'testing' stamp: 'TC 11/30/2021 01:23:13'!
+tieneArchivos
+
+	^ archivos notEmpty.! !
+
+!Folder methodsFor: 'testing' stamp: 'TC 11/30/2021 01:23:01'!
+tieneCarpetas
+
+	^ carpetas notEmpty.! !
+
+!Folder methodsFor: 'testing' stamp: 'dk 11/30/2021 00:45:01'!
+tienePermisosDeEscrituraDelUsuario: unUsuario 
+
+	^ (permisosDeEscritura tienePermisos: unUsuario)! !
+
+!Folder methodsFor: 'testing' stamp: 'dk 11/30/2021 00:45:11'!
+tienePermisosDeLecturaDelUsuario: unUsuario 
+	
+	^ (permisosDeLectura tienePermisos: unUsuario)! !
+
+
+!Folder methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:23:01'!
+agregarCarpeta: unaCarpeta 
+
+	carpetas add: unaCarpeta.! !
+
+!Folder methodsFor: 'public actions' stamp: 'dk 11/25/2021 01:24:50'!
+creadoPor: unUsuario
+
+	creadoPorUsuario _ unUsuario! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Folder class' category: 'Grupo1-TP-Final'!
+Folder class
+	instanceVariableNames: ''!
+
+!Folder class methodsFor: 'instance creation' stamp: 'dk 11/25/2021 01:39:26'!
+conNombre: unNombre
+
+	^self new inicializarConNombre: unNombre.! !
+
+
+!classDefinition: #TextFile category: 'Grupo1-TP-Final'!
+File subclass: #TextFile
+	instanceVariableNames: 'texto permisosDeEjecucion'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Grupo1-TP-Final'!
+
+!TextFile methodsFor: 'initialization' stamp: 'dk 11/25/2021 01:19:38'!
+initialize
+
+	fechaDeCreacion _ FixedGregorianDate today.
+	fechaDeModificacion _ FixedGregorianDate today.
+
+	texto _ '' .
+	permisosDeLectura _ PermisoDeLectura new.
+	permisosDeEscritura _ PermisoDeEscritura new.
+	permisosDeEjecucion _ PermisoDeEjecucion new.! !
+
+!TextFile methodsFor: 'initialization' stamp: 'dk 11/25/2021 01:19:44'!
+initializeConNombre: unNombre 
+
+	nombre _ unNombre.! !
+
+
+!TextFile methodsFor: 'accessing' stamp: 'dk 11/25/2021 01:20:04'!
+texto
+
+	^ texto! !
+
+
+!TextFile methodsFor: 'testing' stamp: 'dk 11/25/2021 01:20:09'!
+fueCreadoPor: unUsuario 
+
+	^ (creadoPorUsuario nombre = unUsuario nombre).! !
+
+!TextFile methodsFor: 'testing' stamp: 'dk 11/30/2021 00:44:49'!
+tienePermisosDeEjecucionDelUsuario: unUsuario 
+
+	^ (permisosDeEjecucion tienePermisos: unUsuario) | (unUsuario esRoot) ! !
+
+!TextFile methodsFor: 'testing' stamp: 'dk 11/30/2021 00:45:01'!
+tienePermisosDeEscrituraDelUsuario: unUsuario 
+
+	^ (permisosDeEscritura tienePermisos: unUsuario) | (unUsuario esRoot)! !
+
+!TextFile methodsFor: 'testing' stamp: 'dk 11/30/2021 00:45:11'!
+tienePermisosDeLecturaDelUsuario: unUsuario
+
+	^(permisosDeLectura tienePermisos: unUsuario) | (unUsuario esRoot)! !
+
+
+!TextFile methodsFor: 'public actions' stamp: 'dk 11/25/2021 01:18:47'!
+agregarPermisosParaEjecutar: unUsuario 
+	
+	permisosDeEjecucion agregar: unUsuario.! !
+
+!TextFile methodsFor: 'public actions' stamp: 'dk 11/25/2021 16:40:53'!
+creadoPor: unUsuario
+
+	creadoPorUsuario _ unUsuario.
+	
+	(unUsuario esPublico) 
+	ifTrue:[ 
+		permisosDeEjecucion agregar: unUsuario.
+		permisosDeEscritura  agregar: unUsuario.
+		permisosDeLectura    agregar: unUsuario.
+	].
+! !
+
+!TextFile methodsFor: 'public actions' stamp: 'dk 11/25/2021 01:19:27'!
+modificarTexto: unTexto 
+
+	texto _ unTexto .! !
+
+!TextFile methodsFor: 'public actions' stamp: 'dk 11/24/2021 00:42:52'!
+sacarPermisosParaEjecutar: unUsuario 
+	
+	permisosDeEjecucion sacar: unUsuario ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TextFile class' category: 'Grupo1-TP-Final'!
+TextFile class
+	instanceVariableNames: ''!
+
+!TextFile class methodsFor: 'instance creation' stamp: 'dk 11/25/2021 01:40:06'!
+conNombre: unNombre
+
+	^self new initializeConNombre: unNombre. ! !
 
 
 !classDefinition: #Filter category: 'Grupo1-TP-Final'!
@@ -1753,245 +2036,6 @@ sacar: unUsuario
 	usuarioABorrar _ usuariosQuePuedenLeer detect: [:unUsuarioEnLaLista | unUsuarioEnLaLista nombreEsIgual: unUsuario nombre] .
 	
 	usuariosQuePuedenLeer remove: usuarioABorrar .! !
-
-
-!classDefinition: #SistemaDeArchivos category: 'Grupo1-TP-Final'!
-Object subclass: #SistemaDeArchivos
-	instanceVariableNames: 'nombre fechaDeCreacion fechaDeModificacion creadoPorUsuario permisosDeLectura permisosDeEscritura'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Grupo1-TP-Final'!
-
-!SistemaDeArchivos methodsFor: 'subclass message' stamp: 'TC 11/30/2021 01:04:49'!
-creadoPor: unUsuario 
-
-	self subclassResponsibility.! !
-
-!SistemaDeArchivos methodsFor: 'subclass message' stamp: 'TC 11/30/2021 01:15:02'!
-tienePermisoDeLecturaDelUsuario: unUsuario 
-
-	^ self subclassResponsibility.! !
-
-!SistemaDeArchivos methodsFor: 'subclass message' stamp: 'TC 11/30/2021 01:14:20'!
-tienePermisosDeEscrituraDelUsuario: unUsuario 
-
-	^ self subclassResponsibility.! !
-
-
-!SistemaDeArchivos methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:10:34'!
-creadoPorUsuario
-
-	^ creadoPorUsuario.! !
-
-!SistemaDeArchivos methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:10:30'!
-fechaDeCreacion
-
-	^fechaDeCreacion! !
-
-!SistemaDeArchivos methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:10:27'!
-fechaDeModificacion
-
-	^ fechaDeModificacion! !
-
-!SistemaDeArchivos methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:10:21'!
-nombre
-
-	^nombre! !
-
-
-!SistemaDeArchivos methodsFor: 'testing' stamp: 'TC 11/30/2021 01:13:06'!
-nombreEsIgual: unNombre
-
-	^ nombre = unNombre.! !
-
-
-!SistemaDeArchivos methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:17:32'!
-agregarPermisosParaEscribir: unUsuario 
-
-	permisosDeEscritura agregar: unUsuario.! !
-
-!SistemaDeArchivos methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:17:11'!
-agregarPermisosParaLeer: unUsuario 
-	
-	permisosDeLectura agregar: unUsuario.! !
-
-!SistemaDeArchivos methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:17:46'!
-sacarPermisosParaEscribir: unUsuario 
-	
-	permisosDeEscritura sacar: unUsuario ! !
-
-!SistemaDeArchivos methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:18:11'!
-sacarPermisosParaLeer: unUsuario 
-	
-	permisosDeLectura sacar: unUsuario ! !
-
-
-!classDefinition: #File category: 'Grupo1-TP-Final'!
-SistemaDeArchivos subclass: #File
-	instanceVariableNames: 'texto permisosDeEjecucion'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Grupo1-TP-Final'!
-
-!File methodsFor: 'initialization' stamp: 'dk 11/25/2021 01:19:38'!
-initialize
-
-	fechaDeCreacion _ FixedGregorianDate today.
-	fechaDeModificacion _ FixedGregorianDate today.
-
-	texto _ '' .
-	permisosDeLectura _ PermisoDeLectura new.
-	permisosDeEscritura _ PermisoDeEscritura new.
-	permisosDeEjecucion _ PermisoDeEjecucion new.! !
-
-!File methodsFor: 'initialization' stamp: 'dk 11/25/2021 01:19:44'!
-initializeConNombre: unNombre 
-
-	nombre _ unNombre.! !
-
-
-!File methodsFor: 'accessing' stamp: 'dk 11/25/2021 01:20:04'!
-texto
-
-	^ texto! !
-
-
-!File methodsFor: 'testing' stamp: 'dk 11/25/2021 01:20:09'!
-fueCreadoPor: unUsuario 
-
-	^ (creadoPorUsuario nombre = unUsuario nombre).! !
-
-!File methodsFor: 'testing' stamp: 'dk 11/30/2021 00:44:49'!
-tienePermisosDeEjecucionDelUsuario: unUsuario 
-
-	^ (permisosDeEjecucion tienePermisos: unUsuario) | (unUsuario esRoot) ! !
-
-!File methodsFor: 'testing' stamp: 'dk 11/30/2021 00:45:01'!
-tienePermisosDeEscrituraDelUsuario: unUsuario 
-
-	^ (permisosDeEscritura tienePermisos: unUsuario) | (unUsuario esRoot)! !
-
-!File methodsFor: 'testing' stamp: 'dk 11/30/2021 00:45:11'!
-tienePermisosDeLecturaDelUsuario: unUsuario
-
-	^(permisosDeLectura tienePermisos: unUsuario) | (unUsuario esRoot)! !
-
-
-!File methodsFor: 'public actions' stamp: 'dk 11/25/2021 01:18:47'!
-agregarPermisosParaEjecutar: unUsuario 
-	
-	permisosDeEjecucion agregar: unUsuario.! !
-
-!File methodsFor: 'public actions' stamp: 'dk 11/25/2021 16:40:53'!
-creadoPor: unUsuario
-
-	creadoPorUsuario _ unUsuario.
-	
-	(unUsuario esPublico) 
-	ifTrue:[ 
-		permisosDeEjecucion agregar: unUsuario.
-		permisosDeEscritura  agregar: unUsuario.
-		permisosDeLectura    agregar: unUsuario.
-	].
-! !
-
-!File methodsFor: 'public actions' stamp: 'dk 11/25/2021 01:19:27'!
-modificarTexto: unTexto 
-
-	texto _ unTexto .! !
-
-!File methodsFor: 'public actions' stamp: 'dk 11/24/2021 00:42:52'!
-sacarPermisosParaEjecutar: unUsuario 
-	
-	permisosDeEjecucion sacar: unUsuario ! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'File class' category: 'Grupo1-TP-Final'!
-File class
-	instanceVariableNames: ''!
-
-!File class methodsFor: 'instance creation' stamp: 'dk 11/25/2021 01:40:06'!
-conNombre: unNombre
-
-	^self new initializeConNombre: unNombre. ! !
-
-
-!classDefinition: #Folder category: 'Grupo1-TP-Final'!
-SistemaDeArchivos subclass: #Folder
-	instanceVariableNames: 'carpetas archivos'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Grupo1-TP-Final'!
-
-!Folder methodsFor: 'initialization' stamp: 'TC 11/30/2021 01:07:48'!
-inicializarConNombre: unNombre
-
-	nombre _ unNombre.! !
-
-!Folder methodsFor: 'initialization' stamp: 'TC 11/30/2021 01:23:14'!
-initialize
-
-	carpetas _ Set new.
-	archivos _ Set new. 
-	fechaDeCreacion _ FixedGregorianDate today.
-	fechaDeModificacion _ FixedGregorianDate today.
-	
-	permisosDeLectura _ PermisoDeLectura new.
-	permisosDeEscritura _ PermisoDeEscritura new.! !
-
-
-!Folder methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:23:38'!
-archivos
-
-	^archivos! !
-
-!Folder methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:23:55'!
-carpetas
-	^ carpetas! !
-
-
-!Folder methodsFor: 'testing' stamp: 'TC 11/30/2021 01:23:13'!
-tieneArchivos
-
-	^ archivos notEmpty.! !
-
-!Folder methodsFor: 'testing' stamp: 'TC 11/30/2021 01:23:01'!
-tieneCarpetas
-
-	^ carpetas notEmpty.! !
-
-!Folder methodsFor: 'testing' stamp: 'dk 11/30/2021 00:45:01'!
-tienePermisosDeEscrituraDelUsuario: unUsuario 
-
-	^ (permisosDeEscritura tienePermisos: unUsuario)! !
-
-!Folder methodsFor: 'testing' stamp: 'dk 11/30/2021 00:45:11'!
-tienePermisosDeLecturaDelUsuario: unUsuario 
-	
-	^ (permisosDeLectura tienePermisos: unUsuario)! !
-
-
-!Folder methodsFor: 'public actions' stamp: 'TC 11/30/2021 01:23:01'!
-agregarCarpeta: unaCarpeta 
-
-	carpetas add: unaCarpeta.! !
-
-!Folder methodsFor: 'public actions' stamp: 'dk 11/25/2021 01:24:50'!
-creadoPor: unUsuario
-
-	creadoPorUsuario _ unUsuario! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Folder class' category: 'Grupo1-TP-Final'!
-Folder class
-	instanceVariableNames: ''!
-
-!Folder class methodsFor: 'instance creation' stamp: 'dk 11/25/2021 01:39:26'!
-conNombre: unNombre
-
-	^self new inicializarConNombre: unNombre.! !
 
 
 !classDefinition: #Terminal category: 'Grupo1-TP-Final'!
@@ -2453,13 +2497,13 @@ errorUsuarioNoExistente
 
 	^ self error: 'El usuario no existe'! !
 
-!Terminal methodsFor: 'accessing' stamp: 'TC 11/30/2021 01:23:55'!
+!Terminal methodsFor: 'accessing' stamp: 'TC 12/2/2021 17:28:32'!
 ls
-	|listaDeArchivosYCarpetas|
-	listaDeArchivosYCarpetas _ Set new.
-	listaDeArchivosYCarpetas addAll: directorioActual archivos.
-	listaDeArchivosYCarpetas addAll: directorioActual carpetas.
-	^ listaDeArchivosYCarpetas.! !
+	|archivosYCarpetas|
+	archivosYCarpetas _ Set new.
+	archivosYCarpetas addAll: directorioActual archivos.
+	archivosYCarpetas addAll: directorioActual carpetas.
+	^ archivosYCarpetas.! !
 
 !Terminal methodsFor: 'accessing' stamp: 'dk 11/25/2021 01:30:43'!
 obtenerArchivo: unArchivo en: listaDeArchivos
@@ -2481,6 +2525,21 @@ obtenerUsuario: unUsuario
 
 	^ usuarios detect: [:unUsuarioEnLaLista | (unUsuarioEnLaLista nombreEsIgual: unUsuario nombre)] 
 		ifNone: [ self errorUsuarioNoExistente ]! !
+
+
+!Terminal methodsFor: 'printing' stamp: 'TC 12/2/2021 18:55:57'!
+textoEscritoHastaElMomento
+	| textoEscritoHastaElMomento |
+	textoEscritoHastaElMomento _ String  streamContents: [:unStream | "este mensaje genera un stream, al que ejecuta lo que está dentro del bloque"
+		unStream nextPutAll: ('').
+
+		(self ls) do: [:file | 
+			unStream newLine .
+			(file nombre) printOn: unStream. "delegamos al objeto que sabe como debe imprimirse"
+			]	
+	].
+	
+	^ textoEscritoHastaElMomento contents. "al stream, le pide el contenido que tiene en el momento"! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
