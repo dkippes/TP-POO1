@@ -402,38 +402,38 @@ test020_cuandoUnUsuarioCreaUnArchivo_noPuedeCrearloPorque_esteYaExisteEnElDirect
         signal: Error
         withDescription: self errorPorCrearUnArchivoConElMismoNombreEnElDirectorio .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/25/2021 01:43:34'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/6/2021 02:55:19'!
 test021_cuandoUnUsuarioListaElContenidoDelDirectorio_conElComandoLS_esteListaTodosLosArchivosYLasCarpetas
 
 	| unaTerminal listaDeArchivosYCarpetas |
 	"Setup"
 	unaTerminal _ self unaTerminalRootConArchivosYCarpetas .
-	listaDeArchivosYCarpetas _ Set new.
+	listaDeArchivosYCarpetas _ OrderedCollection new.
 	listaDeArchivosYCarpetas add: archivoDeTexto2 .
 	listaDeArchivosYCarpetas add: carpetaTomas .
 	
 	"Assert"
 	Assert that: (unaTerminal ls) isEqualTo: listaDeArchivosYCarpetas.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/25/2021 01:43:39'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/6/2021 02:55:38'!
 test022_cuandoUnUsuarioListaElContenidoDelDirectorio_conElComandoLS_noTieneNadaEnElDirectorioActual
 
 	| unaTerminal listaDeArchivosYCarpetas |
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
-	listaDeArchivosYCarpetas _ Set new.
+	listaDeArchivosYCarpetas _ OrderedCollection new.
 
 	"Assert"
 	Assert that: (unaTerminal ls) isEqualTo: listaDeArchivosYCarpetas.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/25/2021 01:43:45'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/6/2021 02:56:00'!
 test023_cuandoUnUsuarioBorraUnArchivo_conElComandoRM_esteSeBorraDelDirectorioActual
 
 	| unaTerminal unaArchivoNuevo listaDeArchivosYCarpetas |
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
 	unaArchivoNuevo _ archivoDeTexto .
-	listaDeArchivosYCarpetas _ Set new.
+	listaDeArchivosYCarpetas _ OrderedCollection new.
 	
 	"Exercise"
 	unaTerminal touch: unaArchivoNuevo.
@@ -758,7 +758,7 @@ test044_cuandoUnUsuarioRemuevaUnArchivoDeTexto_esteNoTienePermisosDeEscritura
         signal: Error
         withDescription: 'El usuario no tiene permisos de escritura'.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/25/2021 01:48:50'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/6/2021 02:56:27'!
 test045_cuandoUnUsuarioRootRemuevaUnArchivoDeTexto_esteTienePermisosDeEscritura
 
 	|unaTerminal |
@@ -770,9 +770,9 @@ test045_cuandoUnUsuarioRootRemuevaUnArchivoDeTexto_esteTienePermisosDeEscritura
 	unaTerminal rm: archivoDeTexto .
 	
 	"Assert"
-	Assert that: (unaTerminal ls) isEqualTo: Set new .! !
+	Assert that: (unaTerminal ls) isEqualTo: OrderedCollection new .! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/25/2021 01:48:56'!
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/6/2021 02:56:50'!
 test046_cuandoUnUsuarioPropietarioRemuevaUnArchivoDeTexto_esteTienePermisosDeEscritura
 
 	|unaTerminal |
@@ -786,7 +786,7 @@ test046_cuandoUnUsuarioPropietarioRemuevaUnArchivoDeTexto_esteTienePermisosDeEsc
 	unaTerminal rm: archivoDeTexto .
 	
 	"Assert"
-	Assert that: (unaTerminal ls) isEqualTo: Set new .! !
+	Assert that: (unaTerminal ls) isEqualTo: OrderedCollection new .! !
 
 !TerminalTest methodsFor: 'terminal_testing' stamp: 'dk 11/25/2021 01:49:03'!
 test047_cuandoUnUsuarioCreaUnaCarpeta_esteNoTienePermisosDeEscritura
@@ -1381,25 +1381,64 @@ test081_cuandoUnUsuarioRoot_quieraAgregarPermisosAUnUsuarioInexistente_esteNoPue
         signal: Error
         withDescription: 'El usuario no existe'.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/2/2021 18:49:40'!
-test082_seEscribeUnArchivoVacioDelDirectorioActual
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/6/2021 01:37:08'!
+test082_cuandoNoHayArchivosOCarpetasEnElDirectorioActual_NoHayTextoEscritoHastaElMomento
 
-	| unaTerminal |
+	| unaTerminal textoEsperado|
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	textoEsperado _ 'root:', String newLineString .
 
-	Assert that: unaTerminal textoEscritoHastaElMomento isEqualTo: ''.! !
+	Assert that: unaTerminal textoEscritoHastaElMomento isEqualTo: textoEsperado.! !
 
-!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/2/2021 18:49:15'!
-test083_cuandoSeEscribeUnArchivoDeTextoRealEsteTieneUnaCarpetaVacia
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/6/2021 02:51:02'!
+test083_cuandoHayArchivosOCarpetasEnElDirectorioActual_HayTextoEscritoHastaElMomento
 
-	| unaTerminal |
+	| unaTerminal textoEsperado |
 	"Setup"
 	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	textoEsperado _ 
+	'root:', String newLineString, 
+	'Archivo1.txt', String tab, 'lectura[]', String tab, 'escritura[]', String tab, 'ejecucion[]', String newLineString, 
+	'Diego', String tab, 'lectura[]', String tab, 'escritura[]', String newLineString.
 	
 	unaTerminal mkdir: carpetaDiego.
+	unaTerminal touch: archivoDeTexto.
 
-	Assert that: unaTerminal textoEscritoHastaElMomento isEqualTo: ''.! !
+	Assert that: unaTerminal textoEscritoHastaElMomento isEqualTo: textoEsperado.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/6/2021 03:01:58'!
+test084_seCreaUnArchivoDeTextoVacio_cuandoNoHayArchivosOCarpetas
+
+	| unaTerminal textoEsperado|
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	textoEsperado _ 'root:', String newLineString. 
+
+	unaTerminal imprimirInfoDelDirectorio.
+	
+
+	Assert that: unaTerminal textoEscritoHastaElMomento isEqualTo: textoEsperado.! !
+
+!TerminalTest methodsFor: 'terminal_testing' stamp: 'TC 12/6/2021 03:29:58'!
+test085_seCreaUnArchivoDeTextoConInfoDePermisos_cuandoHayArchivosOCarpetas
+
+	| unaTerminal textoEsperado|
+	"Setup"
+	unaTerminal _ self unaTerminalConUnUsuarioRootDefaultLogueado.
+	textoEsperado _ 'root:', String newLineString, 
+	'Diego', String tab, 'lectura[Tomas]', String tab, 'escritura[Tomas]', String newLineString.
+	
+	unaTerminal mkdir: carpetaDiego.
+	unaTerminal ingresarUsuario: unUserPublicTomas4321. 
+	unaTerminal agregarPermisosDeLectura: unUserPublicTomas4321 paraLaCarpeta: carpetaDiego. 
+	unaTerminal cd: carpetaDiego.
+	unaTerminal agregarPermisosDeEscrituraEnElDirectorioPara: unUserPublicTomas4321.
+	unaTerminal cd.
+	"unaTerminal imprimirInfoDelDirectorio".
+	
+
+	Assert that: unaTerminal textoEscritoHastaElMomento isEqualTo: textoEsperado.! !
 
 
 !TerminalTest methodsFor: 'setUp/tearDown' stamp: 'TC 12/2/2021 18:05:33'!
@@ -1586,6 +1625,12 @@ creadoPor: unUsuario
 
 	creadoPorUsuario _ unUsuario! !
 
+
+!Folder methodsFor: 'printing' stamp: 'TC 12/6/2021 03:20:36'!
+printOn: unStream
+   
+	unStream nextPutAll: nombre, String tab, 'lectura[', (permisosDeLectura printOn: unStream),']', String tab, 'escritura[', (permisosDeLectura printOn: unStream),']'.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Folder class' category: 'Grupo1-TP-Final'!
@@ -1676,6 +1721,12 @@ modificarTexto: unTexto
 sacarPermisosParaEjecutar: unUsuario 
 	
 	permisosDeEjecucion sacar: unUsuario ! !
+
+
+!TextFile methodsFor: 'printing' stamp: 'TC 12/6/2021 02:50:31'!
+printOn: unStream
+
+	unStream nextPutAll: nombre, String tab, 'lectura[]', String tab, 'escritura[]', String tab, 'ejecucion[]'.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1938,6 +1989,14 @@ tienePermisos: unUsuario
 
 	^ self subclassResponsibility .! !
 
+
+!Permiso methodsFor: 'printing' stamp: 'TC 12/6/2021 03:22:24'!
+printOn: unStream
+
+	"unStream nextPutAll: nombre, String tab, 'lectura[', (permisosDeLectura printOn: unStream),']', String tab, 'escritura[', (permisosDeLectura printOn: unStream),']'."  
+	
+	! !
+
 
 !classDefinition: #PermisoDeEjecucion category: 'Grupo1-TP-Final'!
 Permiso subclass: #PermisoDeEjecucion
@@ -1991,6 +2050,14 @@ initialize
 	usuariosQuePuedenEscribir _ Set new ! !
 
 
+!PermisoDeEscritura methodsFor: 'printing' stamp: 'TC 12/6/2021 03:28:35'!
+printOn: unStream
+
+	"unStream nextPutAll: nombre, String tab, 'lectura[', (permisosDeLectura printOn: unStream),']', String tab, 'escritura[', (permisosDeLectura printOn: unStream),']'."
+	
+	usuariosQuePuedenEscribir do: [:unUsuario| unStream nextPutAll: unUsuario nombre, ','].! !
+
+
 !PermisoDeEscritura methodsFor: 'public actions' stamp: 'dk 11/30/2021 00:43:01'!
 agregar: unUsuario
 
@@ -2022,6 +2089,13 @@ initialize
 tienePermisos: unUser 
 
 	^ usuariosQuePuedenLeer anySatisfy: [:unUsuarioEnLaLista | unUser nombreEsIgual: unUsuarioEnLaLista nombre]! !
+
+
+!PermisoDeLectura methodsFor: 'printing' stamp: 'TC 12/6/2021 03:28:22'!
+printOn: unStream
+
+	"unStream nextPutAll: nombre, String tab, 'lectura[', (permisosDeLectura printOn: unStream),']', String tab, 'escritura[', (permisosDeLectura printOn: unStream),']'."
+	usuariosQuePuedenLeer do: [:unUsuario| unStream nextPutAll: unUsuario nombre, ','].! !
 
 
 !PermisoDeLectura methodsFor: 'public actions' stamp: 'dk 11/30/2021 00:43:09'!
@@ -2497,10 +2571,10 @@ errorUsuarioNoExistente
 
 	^ self error: 'El usuario no existe'! !
 
-!Terminal methodsFor: 'accessing' stamp: 'TC 12/2/2021 17:28:32'!
+!Terminal methodsFor: 'accessing' stamp: 'TC 12/6/2021 02:54:12'!
 ls
 	|archivosYCarpetas|
-	archivosYCarpetas _ Set new.
+	archivosYCarpetas _ OrderedCollection new.
 	archivosYCarpetas addAll: directorioActual archivos.
 	archivosYCarpetas addAll: directorioActual carpetas.
 	^ archivosYCarpetas.! !
@@ -2527,15 +2601,26 @@ obtenerUsuario: unUsuario
 		ifNone: [ self errorUsuarioNoExistente ]! !
 
 
-!Terminal methodsFor: 'printing' stamp: 'TC 12/2/2021 18:55:57'!
+!Terminal methodsFor: 'printing' stamp: 'TC 12/6/2021 01:04:26'!
+imprimirInfoDelDirectorio
+	|directorio|
+	directorio _ (directorioActual nombre, '.txt') asFileEntry.
+	 
+	directorio forceWriteStreamDo: [:fileStream | 
+		"al stream que representa el contenido del archivo, le adjunta todo lo que queremos escribir"
+		fileStream nextPutAll: (self textoEscritoHastaElMomento)
+		].! !
+
+!Terminal methodsFor: 'printing' stamp: 'TC 12/6/2021 02:00:29'!
 textoEscritoHastaElMomento
 	| textoEscritoHastaElMomento |
-	textoEscritoHastaElMomento _ String  streamContents: [:unStream | "este mensaje genera un stream, al que ejecuta lo que está dentro del bloque"
-		unStream nextPutAll: ('').
+	textoEscritoHastaElMomento _ String  streamContents: [:unStream | "este mensaje genera un stream, al que ejecuta lo que está dentro del bloque."
 
+		unStream nextPutAll: directorioActual nombre, ':', String newLineString.
 		(self ls) do: [:file | 
-			unStream newLine .
-			(file nombre) printOn: unStream. "delegamos al objeto que sabe como debe imprimirse"
+			file printOn: unStream.
+			unStream nextPutAll: String newLineString.
+			"(file nombre) printOn: unStream." "delegamos al objeto que sabe como debe imprimirse"
 			]	
 	].
 	
